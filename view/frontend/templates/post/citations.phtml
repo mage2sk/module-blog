@@ -1,0 +1,35 @@
+<?php
+declare(strict_types=1);
+/**
+ * @var \Magento\Framework\View\Element\Template $block
+ * @var \Magento\Framework\Escaper $escaper
+ */
+$cit = (array)$block->getData('citations');
+if (empty($cit)) {
+    return;
+}
+?>
+<aside class="pb-citations" aria-label="<?= $escaper->escapeHtmlAttr(__('References')) ?>">
+    <h2 class="pb-citations__title"><?= $escaper->escapeHtml(__('References')) ?></h2>
+    <ol class="pb-citations__list">
+        <?php foreach ($cit as $i => $c):
+            $label = (string)($c['label'] ?? '');
+            $url = (string)($c['url'] ?? '');
+            if ($label === '') {
+                continue;
+            }
+            ?>
+            <li class="pb-citations__item" id="cite-<?= (int)((int)$i + 1) ?>">
+                <?php if ($url !== ''): ?>
+                    <a href="<?= $escaper->escapeUrl($url) ?>"
+                       target="_blank"
+                       rel="noopener nofollow">
+                        <?= $escaper->escapeHtml($label) ?>
+                    </a>
+                <?php else: ?>
+                    <?= $escaper->escapeHtml($label) ?>
+                <?php endif; ?>
+            </li>
+        <?php endforeach; ?>
+    </ol>
+</aside>

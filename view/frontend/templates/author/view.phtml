@@ -1,0 +1,145 @@
+<?php
+declare(strict_types=1);
+/**
+ * @var \Magento\Framework\View\Element\Template $block
+ * @var \Magento\Framework\Escaper $escaper
+ * @var \Panth\Blog\ViewModel\AuthorView $viewModel
+ * @var \Panth\Blog\ViewModel\Sidebar $sidebarViewModel
+ * @var \Panth\Blog\ViewModel\Pagination $paginationViewModel
+ */
+$viewModel = $block->getData('view_model');
+$sidebarViewModel = $block->getData('sidebar_view_model');
+$paginationViewModel = $block->getData('pagination_view_model');
+
+$author = method_exists($viewModel, 'getAuthor') ? $viewModel->getAuthor() : null;
+if (!$author) {
+    return;
+}
+
+$displayName = method_exists($author, 'getDisplayName') ? (string)$author->getDisplayName() : '';
+$role = method_exists($author, 'getRole') ? (string)($author->getRole() ?? '') : '';
+$shortBio = method_exists($author, 'getShortBio') ? (string)($author->getShortBio() ?? '') : '';
+$longBio = method_exists($author, 'getLongBio') ? (string)($author->getLongBio() ?? '') : '';
+$bio = $longBio !== '' ? $longBio : $shortBio;
+$avatar = method_exists($author, 'getAvatar') ? (string)($author->getAvatar() ?? '') : '';
+
+$avatarUrl = '';
+if ($avatar !== '' && method_exists($viewModel, 'getMediaUrl')) {
+    $avatarUrl = (string)$viewModel->getMediaUrl($avatar);
+}
+
+$socialLinks = [];
+if (method_exists($viewModel, 'getSocialLinks')) {
+    $socialLinks = $viewModel->getSocialLinks() ?? [];
+} elseif (method_exists($author, 'getLinks')) {
+    $raw = $author->getLinks();
+    if (is_string($raw) && $raw !== '') {
+        $decoded = json_decode($raw, true);
+        if (is_array($decoded)) {
+            $socialLinks = $decoded;
+        }
+    } elseif (is_array($raw)) {
+        $socialLinks = $raw;
+    }
+}
+
+$posts = method_exists($viewModel, 'getPosts') ? ($viewModel->getPosts() ?? []) : [];
+$currentPage = method_exists($viewModel, 'getCurrentPage') ? (int)$viewModel->getCurrentPage() : 1;
+$total = method_exists($viewModel, 'getTotalPosts') ? (int)$viewModel->getTotalPosts() : count($posts);
+$perPage = method_exists($viewModel, 'getPostsPerPage') ? (int)$viewModel->getPostsPerPage() : 10;
+$breadcrumbs = method_exists($viewModel, 'getBreadcrumbs') ? ($viewModel->getBreadcrumbs() ?? []) : [];
+$jsonLd = method_exists($viewModel, 'getJsonLd') ? (string)$viewModel->getJsonLd() : '';
+?>
+<section class="pb-page pb-author">
+    <?php if (!empty($breadcrumbs)): ?>
+        <?= $block->getLayout()
+            ->createBlock(\Magento\Framework\View\Element\Template::class)
+            ->setTemplate('Panth_Blog::breadcrumbs.phtml')
+            ->setData('items', $breadcrumbs)
+            ->toHtml() ?>
+    <?php endif; ?>
+
+    <section class="pb-banner pb-banner--author">
+        <?php if ($avatarUrl !== ''): ?>
+            <img class="pb-banner__avatar"
+                 src="<?= $escaper->escapeUrl($avatarUrl) ?>"
+                 alt="<?= $escaper->escapeHtmlAttr($displayName) ?>"
+                 loading="lazy"/>
+        <?php endif; ?>
+        <span class="pb-banner__label"><?= $escaper->escapeHtml(__('Author')) ?></span>
+        <h1 class="pb-banner__title"><?= $escaper->escapeHtml($displayName) ?></h1>
+        <?php if ($role !== ''): ?>
+            <p class="pb-banner__role"><?= $escaper->escapeHtml($role) ?></p>
+        <?php endif; ?>
+        <?php if ($bio !== ''): ?>
+            <p class="pb-banner__desc"><?= $escaper->escapeHtml($bio) ?></p>
+        <?php endif; ?>
+        <?php if (!empty($socialLinks)): ?>
+            <div class="pb-banner__links">
+                <?php foreach ($socialLinks as $network => $url): ?>
+                    <?php
+                    if (!is_string($url) || $url === '') {
+                        continue;
+                    }
+                    $label = is_string($network) ? $network : (string)$network;
+                    ?>
+                    <a href="<?= $escaper->escapeUrl($url) ?>"
+                       target="_blank"
+                       rel="noopener me">
+                        <?= $escaper->escapeHtml(ucfirst($label)) ?>
+                    </a>
+                <?php endforeach; ?>
+            </div>
+        <?php endif; ?>
+        <?php if ($total > 0): ?>
+            <span class="pb-banner__count">
+                <?= (int)$total ?> <?= $escaper->escapeHtml($total === 1 ? __('article') : __('articles')) ?>
+            </span>
+        <?php endif; ?>
+    </section>
+
+    <div class="pb-layout">
+        <main class="pb-layout__main">
+            <?php if (empty($posts)): ?>
+                <p class="pb-empty"><?= $escaper->escapeHtml(__('No posts by this author yet.')) ?></p>
+            <?php else: ?>
+                <?= $block->getLayout()
+                    ->createBlock(\Magento\Framework\View\Element\Template::class)
+                    ->setTemplate('Panth_Blog::list/grid.phtml')
+                    ->setData('badges_view_model', $block->getData('badges_view_model'))
+                    ->setData('posts', $posts)
+                    ->setData('view_model', $viewModel)
+                    ->toHtml() ?>
+
+                <?php if ($paginationViewModel && method_exists($paginationViewModel, 'build') && $total > $perPage): ?>
+                    <?php
+                    $pagination = $paginationViewModel->build(
+                        $currentPage,
+                        $total,
+                        $perPage,
+                        static fn(int $p) => method_exists($viewModel, 'getPageUrl') ? $viewModel->getPageUrl($p) : '#'
+                    );
+                    ?>
+                    <?= $block->getLayout()
+                        ->createBlock(\Magento\Framework\View\Element\Template::class)
+                        ->setTemplate('Panth_Blog::pagination.phtml')
+                        ->setData('pagination', $pagination)
+                        ->toHtml() ?>
+                <?php endif; ?>
+            <?php endif; ?>
+        </main>
+        <?php if ($sidebarViewModel): ?>
+            <aside class="pb-layout__sidebar">
+                <?= $block->getLayout()
+                    ->createBlock(\Magento\Framework\View\Element\Template::class)
+                    ->setTemplate('Panth_Blog::sidebar/sidebar.phtml')
+                    ->setData('view_model', $sidebarViewModel)
+                    ->toHtml() ?>
+            </aside>
+        <?php endif; ?>
+    </div>
+
+    <?php if ($jsonLd !== ''): ?>
+        <script type="application/ld+json"><?= /** @noEscape */ $jsonLd ?></script>
+    <?php endif; ?>
+</section>

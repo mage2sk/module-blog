@@ -1,0 +1,37 @@
+<?xml version="1.0"?>
+<csp_whitelist xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+               xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Csp:etc/csp_whitelist.xsd">
+    <policies>
+        <policy id="script-src">
+            <values>
+                <value id="panth_blog_turnstile" type="host">https://challenges.cloudflare.com</value>
+                <value id="panth_blog_hcaptcha" type="host">https://hcaptcha.com</value>
+                <value id="panth_blog_hcaptcha_sub" type="host">https://*.hcaptcha.com</value>
+                <value id="panth_blog_recaptcha" type="host">https://www.google.com</value>
+                <value id="panth_blog_recaptcha_static" type="host">https://www.gstatic.com</value>
+            </values>
+        </policy>
+        <policy id="frame-src">
+            <values>
+                <value id="panth_blog_turnstile" type="host">https://challenges.cloudflare.com</value>
+                <value id="panth_blog_hcaptcha" type="host">https://hcaptcha.com</value>
+                <value id="panth_blog_hcaptcha_sub" type="host">https://*.hcaptcha.com</value>
+                <value id="panth_blog_recaptcha" type="host">https://www.google.com</value>
+            </values>
+        </policy>
+        <policy id="connect-src">
+            <values>
+                <value id="panth_blog_turnstile" type="host">https://challenges.cloudflare.com</value>
+                <value id="panth_blog_hcaptcha" type="host">https://hcaptcha.com</value>
+                <value id="panth_blog_hcaptcha_sub" type="host">https://*.hcaptcha.com</value>
+                <value id="panth_blog_recaptcha" type="host">https://www.google.com</value>
+            </values>
+        </policy>
+        <policy id="style-src">
+            <values>
+                <value id="panth_blog_hcaptcha" type="host">https://hcaptcha.com</value>
+                <value id="panth_blog_hcaptcha_sub" type="host">https://*.hcaptcha.com</value>
+            </values>
+        </policy>
+    </policies>
+</csp_whitelist>

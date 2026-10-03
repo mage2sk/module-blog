@@ -1,0 +1,11 @@
+<?php
+declare(strict_types=1);
+/** @var \Magento\Framework\View\Element\Template $block */
+/** @var \Magento\Framework\Escaper $escaper */
+$viewModel = $block->getData('view_model');
+$front = $viewModel && method_exists($viewModel, 'getRouteFrontName')
+    ? (string) $viewModel->getRouteFrontName()
+    : 'blog';
+$rssUrl = $block->getUrl('', ['_direct' => $front . '/feed.xml']);
+?>
+<link rel="alternate" type="application/rss+xml" href="<?= $escaper->escapeUrl($rssUrl) ?>"/>

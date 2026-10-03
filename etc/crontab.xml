@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Cron:etc/crontab.xsd">
+    <group id="default">
+        <job name="panth_blog_publish_scheduled" instance="Panth\Blog\Cron\PublishScheduledPosts" method="execute">
+            <schedule>*/5 * * * *</schedule>
+        </job>
+        <job name="panth_blog_refresh_post_counts" instance="Panth\Blog\Cron\RefreshPostCounts" method="execute">
+            <schedule>30 3 * * *</schedule>
+        </job>
+        <job name="panth_blog_warm_feed_cache" instance="Panth\Blog\Cron\WarmFeedCache" method="execute">
+            <schedule>15 * * * *</schedule>
+        </job>
+        <job name="panth_blog_notify_indexnow" instance="Panth\Blog\Cron\NotifyIndexNow" method="execute">
+            <schedule>*/5 * * * *</schedule>
+        </job>
+        <job name="panth_blog_archive_stale_drafts" instance="Panth\Blog\Cron\ArchiveStaleDrafts" method="execute">
+            <schedule>0 5 * * 0</schedule>
+        </job>
+    </group>
+</config>

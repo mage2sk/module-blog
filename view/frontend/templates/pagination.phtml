@@ -1,0 +1,55 @@
+<?php
+declare(strict_types=1);
+/** @var \Magento\Framework\View\Element\Template $block */
+/** @var \Magento\Framework\Escaper $escaper */
+$pagination = (array)$block->getData('pagination');
+if (empty($pagination) || empty($pagination['items'])) {
+    return;
+}
+$current = (int)($pagination['current'] ?? 1);
+$total = (int)($pagination['total_pages'] ?? 1);
+if ($total <= 1) {
+    return;
+}
+$prevUrl = (string)($pagination['prev_url'] ?? '');
+$nextUrl = (string)($pagination['next_url'] ?? '');
+?>
+<nav class="pb-pagination" aria-label="<?= $escaper->escapeHtmlAttr(__('Pagination')) ?>">
+    <?php if ($prevUrl !== ''): ?>
+        <a class="pb-pagination__item pb-pagination__prev" href="<?= $escaper->escapeUrl($prevUrl) ?>" rel="prev" aria-label="<?= $escaper->escapeHtmlAttr(__('Previous page')) ?>">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="width:14px;height:14px;flex-shrink:0;">
+                <polyline points="15 18 9 12 15 6"/>
+            </svg>
+            <span><?= $escaper->escapeHtml(__('Prev')) ?></span>
+        </a>
+    <?php endif; ?>
+
+    <?php foreach ($pagination['items'] as $item):
+        $type = (string)($item['type'] ?? 'page');
+        if ($type === 'prev' || $type === 'next' || $type === 'first' || $type === 'last') {
+            continue;
+        }
+        if ($type === 'ellipsis'): ?>
+            <span class="pb-pagination__ellipsis" aria-hidden="true">...</span>
+        <?php else:
+            $page = (int)($item['page'] ?? 0);
+            $url = (string)($item['url'] ?? '');
+            $isCurrent = !empty($item['is_current']);
+        ?>
+            <?php if ($isCurrent): ?>
+                <span class="pb-pagination__item pb-pagination__item--current" aria-current="page"><?= (int)$page ?></span>
+            <?php else: ?>
+                <a class="pb-pagination__item" href="<?= $escaper->escapeUrl($url) ?>"><?= (int)$page ?></a>
+            <?php endif; ?>
+        <?php endif; ?>
+    <?php endforeach; ?>
+
+    <?php if ($nextUrl !== ''): ?>
+        <a class="pb-pagination__item pb-pagination__next" href="<?= $escaper->escapeUrl($nextUrl) ?>" rel="next" aria-label="<?= $escaper->escapeHtmlAttr(__('Next page')) ?>">
+            <span><?= $escaper->escapeHtml(__('Next')) ?></span>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="width:14px;height:14px;flex-shrink:0;">
+                <polyline points="9 18 15 12 9 6"/>
+            </svg>
+        </a>
+    <?php endif; ?>
+</nav>

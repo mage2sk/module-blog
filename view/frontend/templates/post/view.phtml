@@ -1,0 +1,174 @@
+<?php
+declare(strict_types=1);
+/**
+ * @var \Magento\Framework\View\Element\Template $block
+ * @var \Magento\Framework\Escaper $escaper
+ * @var \Panth\Blog\ViewModel\PostView $viewModel
+ * @var \Panth\Blog\ViewModel\Sidebar $sidebarViewModel
+ */
+$viewModel = $block->getData('view_model');
+$sidebarViewModel = $block->getData('sidebar_view_model');
+
+$post = $viewModel ? $viewModel->getPost() : null;
+if (!$post) {
+    return;
+}
+
+$title = (string)$post->getTitle();
+$publishedAt = (string)($post->getPublishedAt() ?? '');
+$author = $viewModel->getAuthor();
+$primaryCategory = $viewModel->getPrimaryCategory();
+$tags = (array)$viewModel->getTags();
+$readingTime = (int)$viewModel->getReadingTime();
+$showReadingTime = (bool)$viewModel->isShowReadingTime();
+$showAuthorBio = (bool)$viewModel->isShowAuthorBio();
+$showShareButtons = (bool)$viewModel->isShowShareButtons();
+$breadcrumbs = method_exists($viewModel, 'getBreadcrumbs') ? (array)$viewModel->getBreadcrumbs() : [];
+$featured = (string)($post->getFeaturedImage() ?? '');
+$featuredAlt = method_exists($post, 'getFeaturedImageAlt')
+    ? (string)($post->getFeaturedImageAlt() ?? '')
+    : '';
+$tldr = (string)$viewModel->getTldr();
+?>
+<article class="pb-page pb-page--narrow pb-post">
+    <?php if (!empty($breadcrumbs)): ?>
+        <?= $block->getLayout()
+            ->createBlock(\Magento\Framework\View\Element\Template::class)
+            ->setTemplate('Panth_Blog::breadcrumbs.phtml')
+            ->setData('items', $breadcrumbs)
+            ->toHtml() ?>
+    <?php endif; ?>
+
+    <header class="pb-post__header">
+        <?php if ($primaryCategory): ?>
+            <a class="pb-post__category-pill"
+               href="<?= $escaper->escapeUrl($viewModel->getCategoryUrl($primaryCategory)) ?>">
+                <?= $escaper->escapeHtml((string)$primaryCategory->getName()) ?>
+            </a>
+        <?php endif; ?>
+        <h1 class="pb-post__title"><?= $escaper->escapeHtml($title) ?></h1>
+        <div class="pb-post__meta">
+            <?php if ($author): ?>
+                <?php $avatar = (string)($author->getAvatar() ?? ''); ?>
+                <?php if ($avatar !== ''): ?>
+                    <img class="pb-post__meta-avatar"
+                         src="<?= $escaper->escapeUrl($viewModel->getMediaUrl($avatar)) ?>"
+                         alt=""/>
+                <?php endif; ?>
+                <a class="pb-post__meta-author"
+                   href="<?= $escaper->escapeUrl($viewModel->getAuthorUrl($author)) ?>">
+                    <?= $escaper->escapeHtml((string)$author->getDisplayName()) ?>
+                </a>
+            <?php endif; ?>
+            <?php if ($publishedAt !== ''): ?>
+                <span class="pb-post__meta-dot" aria-hidden="true"></span>
+                <time datetime="<?= $escaper->escapeHtmlAttr(date('c', strtotime($publishedAt))) ?>">
+                    <?= $escaper->escapeHtml(date('F j, Y', strtotime($publishedAt))) ?>
+                </time>
+            <?php endif; ?>
+            <?php if ($showReadingTime && $readingTime > 0): ?>
+                <span class="pb-post__meta-dot" aria-hidden="true"></span>
+                <span class="pb-post__reading-time">
+                    <?= (int)$readingTime ?> <?= $escaper->escapeHtml(__('min read')) ?>
+                </span>
+            <?php endif; ?>
+        </div>
+    </header>
+
+    <?php if ($featured !== ''): ?>
+        <figure class="pb-post__featured-image">
+            <img src="<?= $escaper->escapeUrl($viewModel->getMediaUrl($featured)) ?>"
+                 alt="<?= $escaper->escapeHtmlAttr($featuredAlt !== '' ? $featuredAlt : $title) ?>"
+                 loading="eager"/>
+        </figure>
+    <?php endif; ?>
+
+    <?php if ($tldr !== ''): ?>
+        <?= $block->getLayout()
+            ->createBlock(\Magento\Framework\View\Element\Template::class)
+            ->setTemplate('Panth_Blog::post/tldr.phtml')
+            ->setData('tldr', $tldr)
+            ->toHtml() ?>
+    <?php endif; ?>
+
+    <?php if ($viewModel->isTocEnabled()): ?>
+        <?= $block->getLayout()
+            ->createBlock(\Magento\Framework\View\Element\Template::class)
+            ->setTemplate('Panth_Blog::post/toc.phtml')
+            ->setData('toc', $viewModel->extractToc())
+            ->toHtml() ?>
+    <?php endif; ?>
+
+    <div class="pb-post__content pb-prose">
+        <?= /** @noEscape */ $viewModel->getProcessedContent() ?>
+    </div>
+
+    <?php $citations = (array)$viewModel->getCitations(); ?>
+    <?php if (!empty($citations)): ?>
+        <?= $block->getLayout()
+            ->createBlock(\Magento\Framework\View\Element\Template::class)
+            ->setTemplate('Panth_Blog::post/citations.phtml')
+            ->setData('citations', $citations)
+            ->toHtml() ?>
+    <?php endif; ?>
+
+    <?php if (!empty($tags)): ?>
+        <div class="pb-post__tags">
+            <span class="pb-post__tags-label"><?= $escaper->escapeHtml(__('Tagged:')) ?></span>
+            <?php foreach ($tags as $tag): ?>
+                <a class="pb-tag-cloud__item"
+                   href="<?= $escaper->escapeUrl($viewModel->getTagUrl($tag)) ?>">
+                    #<?= $escaper->escapeHtml((string)$tag->getName()) ?>
+                </a>
+            <?php endforeach; ?>
+        </div>
+    <?php endif; ?>
+
+    <?php if ($showShareButtons): ?>
+        <?php $shareLinks = (array)$viewModel->getShareLinks(); ?>
+        <?php if (!empty($shareLinks)): ?>
+            <div class="pb-share">
+                <span class="pb-share__label"><?= $escaper->escapeHtml(__('Share')) ?></span>
+                <?php foreach ($shareLinks as $share): ?>
+                    <?php
+                    $network = (string)($share['network'] ?? '');
+                    $url = (string)($share['url'] ?? '');
+                    if ($network === '' || $url === '') {
+                        continue;
+                    }
+                    ?>
+                    <a class="pb-share__btn"
+                       href="<?= $escaper->escapeUrl($url) ?>"
+                       target="_blank"
+                       rel="noopener noreferrer">
+                        <?= $escaper->escapeHtml(ucfirst($network)) ?>
+                    </a>
+                <?php endforeach; ?>
+            </div>
+        <?php endif; ?>
+    <?php endif; ?>
+
+    <?php if ($showAuthorBio && $author): ?>
+        <?= $block->getLayout()
+            ->createBlock(\Magento\Framework\View\Element\Template::class)
+            ->setTemplate('Panth_Blog::post/author-card.phtml')
+            ->setData('author', $author)
+            ->setData('view_model', $viewModel)
+            ->toHtml() ?>
+    <?php endif; ?>
+
+    <?php $related = (array)$viewModel->getRelatedPosts(); ?>
+    <?php if (!empty($related)): ?>
+        <?= $block->getLayout()
+            ->createBlock(\Magento\Framework\View\Element\Template::class)
+            ->setTemplate('Panth_Blog::post/related.phtml')
+            ->setData('related', $related)
+            ->setData('view_model', $viewModel)
+            ->toHtml() ?>
+    <?php endif; ?>
+
+    <?php $jsonLd = (string)$viewModel->getJsonLd(); ?>
+    <?php if ($jsonLd !== ''): ?>
+        <script type="application/ld+json"><?= /** @noEscape */ $jsonLd ?></script>
+    <?php endif; ?>
+</article>

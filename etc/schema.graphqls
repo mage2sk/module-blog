@@ -1,0 +1,80 @@
+type Query {
+    panthBlogPosts(
+        filter: PanthBlogPostFilter
+        pageSize: Int = 10
+        currentPage: Int = 1
+    ): PanthBlogPostsResult @resolver(class: "Panth\\Blog\\Model\\Resolver\\PostsResolver") @doc(description: "List blog posts.")
+
+    panthBlogPost(
+        id: Int
+        urlKey: String
+    ): PanthBlogPost @resolver(class: "Panth\\Blog\\Model\\Resolver\\PostResolver") @doc(description: "Get a single post by ID or URL key.")
+
+    panthBlogCategories: [PanthBlogCategory] @resolver(class: "Panth\\Blog\\Model\\Resolver\\CategoriesResolver") @doc(description: "List blog categories.")
+    panthBlogTags: [PanthBlogTag] @resolver(class: "Panth\\Blog\\Model\\Resolver\\TagsResolver") @doc(description: "List blog tags.")
+    panthBlogAuthors: [PanthBlogAuthor] @resolver(class: "Panth\\Blog\\Model\\Resolver\\AuthorsResolver") @doc(description: "List blog authors.")
+}
+
+input PanthBlogPostFilter {
+    category_url_key: String
+    tag_url_key: String
+    author_url_key: String
+    status: String
+}
+
+type PanthBlogPostsResult {
+    items: [PanthBlogPost]
+    total_count: Int
+    page_info: PanthBlogPageInfo
+}
+
+type PanthBlogPageInfo {
+    page_size: Int
+    current_page: Int
+    total_pages: Int
+}
+
+type PanthBlogPost {
+    post_id: Int
+    url_key: String
+    title: String
+    short_description: String
+    content: String
+    meta_title: String
+    meta_description: String
+    featured_image: String
+    author_id: Int
+    status: String
+    published_at: String
+    updated_at: String
+    reading_time_min: Int
+    word_count: Int
+    tldr_summary: String
+}
+
+type PanthBlogCategory {
+    category_id: Int
+    parent_id: Int
+    url_key: String
+    name: String
+    description: String
+    post_count: Int
+    is_active: Int
+}
+
+type PanthBlogTag {
+    tag_id: Int
+    url_key: String
+    name: String
+    post_count: Int
+}
+
+type PanthBlogAuthor {
+    author_id: Int
+    url_key: String
+    display_name: String
+    role: String
+    short_bio: String
+    long_bio: String
+    avatar: String
+}

@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Email:etc/email_templates.xsd">
+    <template id="panth_blog_comment_notification"
+              label="Panth Blog: New Comment Notification"
+              file="comment_notification.html"
+              type="html"
+              module="Panth_Blog"
+              area="frontend"/>
+</config>

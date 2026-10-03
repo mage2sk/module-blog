@@ -1,0 +1,17 @@
+<?php
+declare(strict_types=1);
+/**
+ * @var \Magento\Framework\View\Element\Template $block
+ * @var \Magento\Framework\Escaper $escaper
+ * @var \Panth\Blog\ViewModel\PostView $vm
+ */
+$vm = $block->getData('view_model');
+if (!$vm) {
+    return;
+}
+$json = (string)$vm->getJsonLd();
+if ($json === '') {
+    return;
+}
+?>
+<script type="application/ld+json"><?= /** @noEscape */ $json ?></script>

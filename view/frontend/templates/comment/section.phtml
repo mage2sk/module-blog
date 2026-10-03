@@ -1,0 +1,142 @@
+<?php
+declare(strict_types=1);
+/** @var \Magento\Framework\View\Element\Template $block */
+/** @var \Magento\Framework\Escaper $escaper */
+/** @var \Magento\Framework\View\Helper\SecureHtmlRenderer $secureRenderer */
+
+/** @var \Panth\Blog\ViewModel\CommentSection $vm */
+$vm = $block->getData('view_model');
+/** @var \Panth\Blog\ViewModel\PostView $postVm */
+$postVm = $block->getData('post_view_model');
+
+$post = $postVm ? $postVm->getPost() : null;
+if (!$vm || !$vm->isVisible($post)) {
+    return;
+}
+
+$comments = $vm->getApproved((int) $post->getPostId());
+$count = count($comments);
+$reason = $vm->getReason();
+?>
+<section id="comments" class="pb-comments">
+    <h2 class="pb-comments__title">
+        <?= $escaper->escapeHtml(__('Comments')) ?> (<?= (int) $count ?>)
+    </h2>
+
+    <?php if ($count === 0): ?>
+        <p class="pb-comments__empty"><?= $escaper->escapeHtml(__('No comments yet. Be the first to leave one.')) ?></p>
+    <?php else: ?>
+        <ol class="pb-comments__list">
+            <?php foreach ($comments as $comment): ?>
+                <li class="pb-comment">
+                    <div class="pb-comment__meta">
+                        <span class="pb-comment__author"><?= $escaper->escapeHtml($comment->getAuthorName()) ?></span>
+                        <?php $createdAt = (string) $comment->getCreatedAt(); ?>
+                        <?php if ($createdAt !== ''): ?>
+                            <time class="pb-comment__date" datetime="<?= $escaper->escapeHtmlAttr(date('c', strtotime($createdAt))) ?>">
+                                <?= $escaper->escapeHtml(date('F j, Y', strtotime($createdAt))) ?>
+                            </time>
+                        <?php endif; ?>
+                    </div>
+                    <div class="pb-comment__body"><?= /* @noEscape */ nl2br($escaper->escapeHtml($comment->getContent())) ?></div>
+                </li>
+            <?php endforeach; ?>
+        </ol>
+    <?php endif; ?>
+
+    <?php if ($vm->canPost()): ?>
+        <form class="pb-comment-form" id="pb-comment-form" method="post" action="<?= $escaper->escapeUrl($vm->getSubmitUrl()) ?>">
+            <input name="form_key" type="hidden" value="<?= $escaper->escapeHtmlAttr($vm->getFormKey()) ?>"/>
+            <input name="post_slug" type="hidden" value="<?= $escaper->escapeHtmlAttr($post->getUrlKey()) ?>"/>
+
+            <h3 class="pb-comment-form__title"><?= $escaper->escapeHtml(__('Leave a comment')) ?></h3>
+
+            <div class="pb-comment-form__row">
+                <label class="pb-comment-form__label" for="pb-comment-author-name"><?= $escaper->escapeHtml(__('Name')) ?></label>
+                <input class="pb-comment-form__input" id="pb-comment-author-name" name="author_name" type="text" required
+                       autocomplete="name"/>
+            </div>
+
+            <div class="pb-comment-form__row">
+                <label class="pb-comment-form__label" for="pb-comment-author-email"><?= $escaper->escapeHtml(__('Email')) ?></label>
+                <input class="pb-comment-form__input" id="pb-comment-author-email" name="author_email" type="email"
+                       autocomplete="email"/>
+                <span class="pb-comment-form__hint"><?= $escaper->escapeHtml(__('Not published.')) ?></span>
+            </div>
+
+            <div class="pb-comment-form__row">
+                <label class="pb-comment-form__label" for="pb-comment-content"><?= $escaper->escapeHtml(__('Comment')) ?></label>
+                <textarea class="pb-comment-form__textarea" id="pb-comment-content" name="content" rows="5" required></textarea>
+            </div>
+
+            <?php $captchaProvider = $vm->getCaptchaProvider(); ?>
+            <?php if ($captchaProvider === 'math'): ?>
+                <?php $challenge = $vm->getMathChallenge(); ?>
+                <div class="pb-comment-form__row">
+                    <label class="pb-comment-form__label" for="pb-comment-captcha"><?= $escaper->escapeHtml($challenge['question']) ?></label>
+                    <input class="pb-comment-form__input" id="pb-comment-captcha" name="captcha_answer" type="text"
+                           inputmode="numeric" autocomplete="off" required/>
+                    <input name="captcha_token" type="hidden" value="<?= $escaper->escapeHtmlAttr($challenge['token']) ?>"/>
+                </div>
+            <?php elseif ($captchaProvider === 'hcaptcha'): ?>
+                <div class="pb-comment-form__row">
+                    <div class="h-captcha" data-sitekey="<?= $escaper->escapeHtmlAttr($vm->getCaptchaSiteKey()) ?>"></div>
+                </div>
+                <?= /* @noEscape */ $secureRenderer->renderTag(
+                    'script',
+                    ['src' => 'https://js.hcaptcha.com/1/api.js', 'async' => 'async', 'defer' => 'defer'],
+                    null,
+                    false
+                ) ?>
+            <?php elseif ($captchaProvider === 'cloudflare_turnstile'): ?>
+                <div class="pb-comment-form__row">
+                    <div class="cf-turnstile" data-sitekey="<?= $escaper->escapeHtmlAttr($vm->getCaptchaSiteKey()) ?>"></div>
+                </div>
+                <?= /* @noEscape */ $secureRenderer->renderTag(
+                    'script',
+                    ['src' => 'https://challenges.cloudflare.com/turnstile/v0/api.js', 'async' => 'async', 'defer' => 'defer'],
+                    null,
+                    false
+                ) ?>
+            <?php elseif ($captchaProvider === 'recaptcha_v3'): ?>
+                <?php $siteKey = $vm->getCaptchaSiteKey(); ?>
+                <input name="g-recaptcha-response" type="hidden" value=""
+                       data-sitekey="<?= $escaper->escapeHtmlAttr($siteKey) ?>"/>
+                <?= /* @noEscape */ $secureRenderer->renderTag(
+                    'script',
+                    ['src' => 'https://www.google.com/recaptcha/api.js?render=' . rawurlencode($siteKey)],
+                    null,
+                    false
+                ) ?>
+                <?php $recaptchaScript = <<<'JS'
+(function () {
+    var form = document.getElementById('pb-comment-form');
+    if (!form) {
+        return;
+    }
+    form.addEventListener('submit', function (event) {
+        var field = form.querySelector('input[name="g-recaptcha-response"]');
+        if (!field || field.value !== '' || typeof window.grecaptcha === 'undefined') {
+            return;
+        }
+        event.preventDefault();
+        window.grecaptcha.ready(function () {
+            window.grecaptcha.execute(field.getAttribute('data-sitekey'), {action: 'blog_comment'})
+                .then(function (token) {
+                    field.value = token;
+                    form.submit();
+                });
+        });
+    });
+}());
+JS;
+                ?>
+                <?= /* @noEscape */ $secureRenderer->renderTag('script', [], $recaptchaScript, false) ?>
+            <?php endif; ?>
+
+            <button class="pb-comment-form__submit" type="submit"><?= $escaper->escapeHtml(__('Post comment')) ?></button>
+        </form>
+    <?php elseif ($reason !== ''): ?>
+        <p class="pb-comments__locked"><?= $escaper->escapeHtml($reason) ?></p>
+    <?php endif; ?>
+</section>

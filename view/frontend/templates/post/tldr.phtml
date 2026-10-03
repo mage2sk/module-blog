@@ -1,0 +1,15 @@
+<?php
+declare(strict_types=1);
+/**
+ * @var \Magento\Framework\View\Element\Template $block
+ * @var \Magento\Framework\Escaper $escaper
+ */
+$tldr = (string)$block->getData('tldr');
+if ($tldr === '') {
+    return;
+}
+?>
+<aside class="pb-tldr" aria-label="<?= $escaper->escapeHtmlAttr(__('Quick answer')) ?>">
+    <span class="pb-tldr__label"><?= $escaper->escapeHtml(__('TL;DR')) ?></span>
+    <p class="pb-tldr__text"><?= $escaper->escapeHtml($tldr) ?></p>
+</aside>

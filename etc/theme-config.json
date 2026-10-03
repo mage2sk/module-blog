@@ -1,0 +1,11 @@
+{
+  "pb-primary": "#f97316",
+  "pb-primary-dark": "#ea580c",
+  "pb-primary-light": "#FFF4ED",
+  "pb-bg": "#FFFFFF",
+  "pb-surface": "#FAFAFA",
+  "pb-border": "#E5E7EB",
+  "pb-text": "#171717",
+  "pb-text-secondary": "#525252",
+  "pb-text-muted": "#A3A3A3"
+}

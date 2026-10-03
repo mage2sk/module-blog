@@ -1,0 +1,93 @@
+<?xml version="1.0"?>
+<routes xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Webapi:etc/webapi.xsd">
+
+    <!-- Posts -->
+    <route url="/V1/panth-blog/posts" method="GET">
+        <service class="Panth\Blog\Api\PostRepositoryInterface" method="getList"/>
+        <resources><resource ref="anonymous"/></resources>
+    </route>
+    <route url="/V1/panth-blog/posts/:id" method="GET">
+        <service class="Panth\Blog\Api\PostRepositoryInterface" method="getById"/>
+        <resources><resource ref="anonymous"/></resources>
+    </route>
+    <route url="/V1/panth-blog/posts" method="POST">
+        <service class="Panth\Blog\Api\PostRepositoryInterface" method="save"/>
+        <resources><resource ref="Panth_Blog::post"/></resources>
+    </route>
+    <route url="/V1/panth-blog/posts/:postId" method="PUT">
+        <service class="Panth\Blog\Api\PostRepositoryInterface" method="save"/>
+        <resources><resource ref="Panth_Blog::post"/></resources>
+    </route>
+    <route url="/V1/panth-blog/posts/:id" method="DELETE">
+        <service class="Panth\Blog\Api\PostRepositoryInterface" method="deleteById"/>
+        <resources><resource ref="Panth_Blog::post"/></resources>
+    </route>
+
+    <!-- Categories -->
+    <route url="/V1/panth-blog/categories" method="GET">
+        <service class="Panth\Blog\Api\CategoryRepositoryInterface" method="getList"/>
+        <resources><resource ref="anonymous"/></resources>
+    </route>
+    <route url="/V1/panth-blog/categories/:id" method="GET">
+        <service class="Panth\Blog\Api\CategoryRepositoryInterface" method="getById"/>
+        <resources><resource ref="anonymous"/></resources>
+    </route>
+    <route url="/V1/panth-blog/categories" method="POST">
+        <service class="Panth\Blog\Api\CategoryRepositoryInterface" method="save"/>
+        <resources><resource ref="Panth_Blog::category"/></resources>
+    </route>
+    <route url="/V1/panth-blog/categories/:categoryId" method="PUT">
+        <service class="Panth\Blog\Api\CategoryRepositoryInterface" method="save"/>
+        <resources><resource ref="Panth_Blog::category"/></resources>
+    </route>
+    <route url="/V1/panth-blog/categories/:id" method="DELETE">
+        <service class="Panth\Blog\Api\CategoryRepositoryInterface" method="deleteById"/>
+        <resources><resource ref="Panth_Blog::category"/></resources>
+    </route>
+
+    <!-- Tags -->
+    <route url="/V1/panth-blog/tags" method="GET">
+        <service class="Panth\Blog\Api\TagRepositoryInterface" method="getList"/>
+        <resources><resource ref="anonymous"/></resources>
+    </route>
+    <route url="/V1/panth-blog/tags/:id" method="GET">
+        <service class="Panth\Blog\Api\TagRepositoryInterface" method="getById"/>
+        <resources><resource ref="anonymous"/></resources>
+    </route>
+    <route url="/V1/panth-blog/tags" method="POST">
+        <service class="Panth\Blog\Api\TagRepositoryInterface" method="save"/>
+        <resources><resource ref="Panth_Blog::tag"/></resources>
+    </route>
+    <route url="/V1/panth-blog/tags/:tagId" method="PUT">
+        <service class="Panth\Blog\Api\TagRepositoryInterface" method="save"/>
+        <resources><resource ref="Panth_Blog::tag"/></resources>
+    </route>
+    <route url="/V1/panth-blog/tags/:id" method="DELETE">
+        <service class="Panth\Blog\Api\TagRepositoryInterface" method="deleteById"/>
+        <resources><resource ref="Panth_Blog::tag"/></resources>
+    </route>
+
+    <!-- Authors -->
+    <route url="/V1/panth-blog/authors" method="GET">
+        <service class="Panth\Blog\Api\AuthorRepositoryInterface" method="getList"/>
+        <resources><resource ref="anonymous"/></resources>
+    </route>
+    <route url="/V1/panth-blog/authors/:id" method="GET">
+        <service class="Panth\Blog\Api\AuthorRepositoryInterface" method="getById"/>
+        <resources><resource ref="anonymous"/></resources>
+    </route>
+    <route url="/V1/panth-blog/authors" method="POST">
+        <service class="Panth\Blog\Api\AuthorRepositoryInterface" method="save"/>
+        <resources><resource ref="Panth_Blog::author"/></resources>
+    </route>
+    <route url="/V1/panth-blog/authors/:authorId" method="PUT">
+        <service class="Panth\Blog\Api\AuthorRepositoryInterface" method="save"/>
+        <resources><resource ref="Panth_Blog::author"/></resources>
+    </route>
+    <route url="/V1/panth-blog/authors/:id" method="DELETE">
+        <service class="Panth\Blog\Api\AuthorRepositoryInterface" method="deleteById"/>
+        <resources><resource ref="Panth_Blog::author"/></resources>
+    </route>
+
+</routes>

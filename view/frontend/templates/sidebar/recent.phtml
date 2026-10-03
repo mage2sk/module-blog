@@ -1,0 +1,28 @@
+<?php
+declare(strict_types=1);
+/** @var \Magento\Framework\View\Element\Template $block */
+/** @var \Magento\Framework\Escaper $escaper */
+/** @var \Panth\Blog\ViewModel\Sidebar $viewModel */
+$viewModel = $block->getData('view_model');
+$posts = $viewModel ? $viewModel->getRecentPosts() : [];
+if (empty($posts)) {
+    return;
+}
+?>
+<section class="pb-sidebar__widget pb-sidebar__widget--recent">
+    <h3 class="pb-sidebar__widget-title"><?= $escaper->escapeHtml(__('Recent posts')) ?></h3>
+    <ul>
+        <?php foreach ($posts as $post): ?>
+            <li>
+                <a href="<?= $escaper->escapeUrl($viewModel->getPostUrl($post)) ?>">
+                    <?= $escaper->escapeHtml((string)$post->getTitle()) ?>
+                </a>
+                <?php if ($post->getPublishedAt()): ?>
+                    <time datetime="<?= $escaper->escapeHtmlAttr(date('c', strtotime((string)$post->getPublishedAt()))) ?>">
+                        <?= $escaper->escapeHtml(date('M j, Y', strtotime((string)$post->getPublishedAt()))) ?>
+                    </time>
+                <?php endif; ?>
+            </li>
+        <?php endforeach; ?>
+    </ul>
+</section>

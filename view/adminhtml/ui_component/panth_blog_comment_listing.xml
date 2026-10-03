@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<listing xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Ui:etc/ui_configuration.xsd">
+    <argument name="data" xsi:type="array">
+        <item name="js_config" xsi:type="array">
+            <item name="provider" xsi:type="string">panth_blog_comment_listing.panth_blog_comment_listing_data_source</item>
+        </item>
+    </argument>
+    <settings>
+        <spinner>panth_blog_comment_columns</spinner>
+        <deps>
+            <dep>panth_blog_comment_listing.panth_blog_comment_listing_data_source</dep>
+        </deps>
+    </settings>
+    <dataSource name="panth_blog_comment_listing_data_source" component="Magento_Ui/js/grid/provider">
+        <settings>
+            <storageConfig>
+                <param name="indexField" xsi:type="string">comment_id</param>
+            </storageConfig>
+            <updateUrl path="mui/index/render"/>
+        </settings>
+        <aclResource>Panth_Blog::comment</aclResource>
+        <dataProvider class="Panth\Blog\Ui\CommentGridDataProvider" name="panth_blog_comment_listing_data_source">
+            <settings>
+                <requestFieldName>id</requestFieldName>
+                <primaryFieldName>comment_id</primaryFieldName>
+            </settings>
+        </dataProvider>
+    </dataSource>
+    <listingToolbar name="listing_top">
+        <settings>
+            <sticky>true</sticky>
+        </settings>
+        <bookmark name="bookmarks"/>
+        <columnsControls name="columns_controls"/>
+        <filterSearch name="fulltext"/>
+        <filters name="listing_filters"/>
+        <massaction name="listing_massaction">
+            <action name="delete">
+                <settings>
+                    <confirm>
+                        <message translate="true">Are you sure you want to delete selected items?</message>
+                        <title translate="true">Delete items</title>
+                    </confirm>
+                    <url path="*/*/massDelete"/>
+                    <type>delete</type>
+                    <label translate="true">Delete</label>
+                </settings>
+            </action>
+            <action name="approve">
+                <settings>
+                    <url path="*/*/massStatus">
+                        <param name="status">approved</param>
+                    </url>
+                    <type>approve</type>
+                    <label translate="true">Approve</label>
+                </settings>
+            </action>
+            <action name="pending">
+                <settings>
+                    <url path="*/*/massStatus">
+                        <param name="status">pending</param>
+                    </url>
+                    <type>pending</type>
+                    <label translate="true">Mark Pending</label>
+                </settings>
+            </action>
+            <action name="spam">
+                <settings>
+                    <url path="*/*/massStatus">
+                        <param name="status">spam</param>
+                    </url>
+                    <type>spam</type>
+                    <label translate="true">Mark Spam</label>
+                </settings>
+            </action>
+            <action name="trash">
+                <settings>
+                    <url path="*/*/massStatus">
+                        <param name="status">trash</param>
+                    </url>
+                    <type>trash</type>
+                    <label translate="true">Move to Trash</label>
+                </settings>
+            </action>
+        </massaction>
+        <paging name="listing_paging"/>
+    </listingToolbar>
+    <columns name="panth_blog_comment_columns">
+        <selectionsColumn name="ids" sortOrder="0">
+            <settings>
+                <indexField>comment_id</indexField>
+            </settings>
+        </selectionsColumn>
+        <column name="comment_id" sortOrder="10">
+            <settings>
+                <filter>textRange</filter>
+                <label translate="true">ID</label>
+                <sorting>desc</sorting>
+            </settings>
+        </column>
+        <column name="post_id" sortOrder="20" class="Panth\Blog\Ui\Component\Listing\Columns\CommentPost">
+            <settings>
+                <filter>textRange</filter>
+                <label translate="true">Post</label>
+            </settings>
+        </column>
+        <column name="author_name" sortOrder="30">
+            <settings>
+                <filter>text</filter>
+                <label translate="true">Author</label>
+            </settings>
+        </column>
+        <column name="author_email" sortOrder="40">
+            <settings>
+                <filter>text</filter>
+                <label translate="true">Email</label>
+                <visible>false</visible>
+            </settings>
+        </column>
+        <column name="content" sortOrder="50">
+            <settings>
+                <filter>text</filter>
+                <label translate="true">Excerpt</label>
+                <sortable>false</sortable>
+            </settings>
+        </column>
+        <column name="status" sortOrder="60" component="Magento_Ui/js/grid/columns/select">
+            <settings>
+                <options class="Panth\Blog\Model\Config\Source\CommentStatus"/>
+                <filter>select</filter>
+                <dataType>select</dataType>
+                <label translate="true">Status</label>
+            </settings>
+        </column>
+        <column name="created_at" sortOrder="70" class="Magento\Ui\Component\Listing\Columns\Date" component="Magento_Ui/js/grid/columns/date">
+            <settings>
+                <filter>dateRange</filter>
+                <dataType>date</dataType>
+                <label translate="true">Created</label>
+            </settings>
+        </column>
+        <column name="ip" sortOrder="80">
+            <settings>
+                <filter>text</filter>
+                <label translate="true">IP</label>
+                <sortable>false</sortable>
+                <visible>false</visible>
+            </settings>
+        </column>
+        <actionsColumn name="actions" class="Panth\Blog\Ui\Component\Listing\Columns\CommentActions" sortOrder="1000">
+            <settings>
+                <indexField>comment_id</indexField>
+            </settings>
+        </actionsColumn>
+    </columns>
+</listing>

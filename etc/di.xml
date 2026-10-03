@@ -1,0 +1,355 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+
+    <preference for="Panth\Blog\Api\Data\PostInterface" type="Panth\Blog\Model\Post"/>
+    <preference for="Panth\Blog\Api\Data\PostSearchResultsInterface" type="Magento\Framework\Api\SearchResults"/>
+    <preference for="Panth\Blog\Api\Data\CategoryInterface" type="Panth\Blog\Model\Category"/>
+    <preference for="Panth\Blog\Api\Data\CategorySearchResultsInterface" type="Magento\Framework\Api\SearchResults"/>
+    <preference for="Panth\Blog\Api\Data\TagInterface" type="Panth\Blog\Model\Tag"/>
+    <preference for="Panth\Blog\Api\Data\TagSearchResultsInterface" type="Magento\Framework\Api\SearchResults"/>
+    <preference for="Panth\Blog\Api\Data\AuthorInterface" type="Panth\Blog\Model\Author"/>
+    <preference for="Panth\Blog\Api\Data\AuthorSearchResultsInterface" type="Magento\Framework\Api\SearchResults"/>
+    <preference for="Panth\Blog\Api\Data\CommentInterface" type="Panth\Blog\Model\Comment"/>
+    <preference for="Panth\Blog\Api\Data\CommentSearchResultsInterface" type="Magento\Framework\Api\SearchResults"/>
+
+    <preference for="Panth\Blog\Api\PostRepositoryInterface" type="Panth\Blog\Model\PostRepository"/>
+    <preference for="Panth\Blog\Api\CategoryRepositoryInterface" type="Panth\Blog\Model\CategoryRepository"/>
+    <preference for="Panth\Blog\Api\TagRepositoryInterface" type="Panth\Blog\Model\TagRepository"/>
+    <preference for="Panth\Blog\Api\AuthorRepositoryInterface" type="Panth\Blog\Model\AuthorRepository"/>
+    <preference for="Panth\Blog\Api\CommentRepositoryInterface" type="Panth\Blog\Model\CommentRepository"/>
+
+    <!-- Admin grid data providers -->
+    <virtualType name="PanthBlogPostGridDataProvider"
+                 type="Magento\Framework\View\Element\UiComponent\DataProvider\DataProvider">
+        <arguments>
+            <argument name="collection" xsi:type="object" shared="false">
+                Panth\Blog\Model\ResourceModel\Post\Grid\Collection
+            </argument>
+            <argument name="filterPool" xsi:type="object" shared="false">
+                Magento\Framework\View\Element\UiComponent\DataProvider\FilterPool
+            </argument>
+        </arguments>
+    </virtualType>
+
+    <type name="Magento\Framework\View\Element\UiComponent\DataProvider\CollectionFactory">
+        <arguments>
+            <argument name="collections" xsi:type="array">
+                <item name="panth_blog_post_listing_data_source" xsi:type="string">
+                    Panth\Blog\Model\ResourceModel\Post\Grid\Collection
+                </item>
+                <item name="panth_blog_category_listing_data_source" xsi:type="string">
+                    Panth\Blog\Model\ResourceModel\Category\Grid\Collection
+                </item>
+                <item name="panth_blog_tag_listing_data_source" xsi:type="string">
+                    Panth\Blog\Model\ResourceModel\Tag\Grid\Collection
+                </item>
+                <item name="panth_blog_author_listing_data_source" xsi:type="string">
+                    Panth\Blog\Model\ResourceModel\Author\Grid\Collection
+                </item>
+                <item name="panth_blog_comment_listing_data_source" xsi:type="string">
+                    Panth\Blog\Model\ResourceModel\Comment\Grid\Collection
+                </item>
+            </argument>
+        </arguments>
+    </type>
+
+    <type name="Panth\Blog\Model\ResourceModel\Post\Grid\Collection">
+        <arguments>
+            <argument name="mainTable" xsi:type="string">panth_blog_post</argument>
+            <argument name="resourceModel" xsi:type="string">Panth\Blog\Model\ResourceModel\Post</argument>
+        </arguments>
+    </type>
+    <type name="Panth\Blog\Model\ResourceModel\Category\Grid\Collection">
+        <arguments>
+            <argument name="mainTable" xsi:type="string">panth_blog_category</argument>
+            <argument name="resourceModel" xsi:type="string">Panth\Blog\Model\ResourceModel\Category</argument>
+        </arguments>
+    </type>
+    <type name="Panth\Blog\Model\ResourceModel\Tag\Grid\Collection">
+        <arguments>
+            <argument name="mainTable" xsi:type="string">panth_blog_tag</argument>
+            <argument name="resourceModel" xsi:type="string">Panth\Blog\Model\ResourceModel\Tag</argument>
+        </arguments>
+    </type>
+    <type name="Panth\Blog\Model\ResourceModel\Author\Grid\Collection">
+        <arguments>
+            <argument name="mainTable" xsi:type="string">panth_blog_author</argument>
+            <argument name="resourceModel" xsi:type="string">Panth\Blog\Model\ResourceModel\Author</argument>
+        </arguments>
+    </type>
+    <type name="Panth\Blog\Model\ResourceModel\Comment\Grid\Collection">
+        <arguments>
+            <argument name="mainTable" xsi:type="string">panth_blog_comment</argument>
+            <argument name="resourceModel" xsi:type="string">Panth\Blog\Model\ResourceModel\Comment</argument>
+        </arguments>
+    </type>
+
+    <!--
+        Panth_LlmsTxt integration: append a "Blog Posts" section to the
+        rendered /llms.txt, /llms-full.txt and /llms.json outputs without
+        editing the host module. Plugins are only invoked if Panth_LlmsTxt
+        is installed; Magento's DI compiler skips registrations targeting
+        unknown classes silently.
+    -->
+    <type name="Panth\LlmsTxt\Model\LlmsTxt\Builder">
+        <plugin name="panth_blog_llms_txt_builder" type="Panth\Blog\Plugin\LlmsTxt\BuilderPlugin"/>
+    </type>
+    <type name="Panth\LlmsTxt\Model\LlmsTxt\FullBuilder">
+        <plugin name="panth_blog_llms_txt_full_builder" type="Panth\Blog\Plugin\LlmsTxt\BuilderPlugin"/>
+    </type>
+    <type name="Panth\LlmsTxt\Model\LlmsTxt\JsonBuilder">
+        <plugin name="panth_blog_llms_txt_json_builder" type="Panth\Blog\Plugin\LlmsTxt\JsonBuilderPlugin"/>
+    </type>
+
+    <virtualType name="Panth\Blog\Model\Api\SearchCriteria\PostStoreFilter" type="Panth\Blog\Model\Api\SearchCriteria\StoreVisibilityFilter">
+        <arguments>
+            <argument name="linkTable" xsi:type="string">panth_blog_post_store</argument>
+            <argument name="idField" xsi:type="string">post_id</argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="Panth\Blog\Model\Api\SearchCriteria\CategoryStoreFilter" type="Panth\Blog\Model\Api\SearchCriteria\StoreVisibilityFilter">
+        <arguments>
+            <argument name="linkTable" xsi:type="string">panth_blog_category_store</argument>
+            <argument name="idField" xsi:type="string">category_id</argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="Panth\Blog\Model\Api\SearchCriteria\PostFilterProcessor" type="Magento\Framework\Api\SearchCriteria\CollectionProcessor\FilterProcessor">
+        <arguments>
+            <argument name="customFilters" xsi:type="array">
+                <item name="store_id" xsi:type="object">Panth\Blog\Model\Api\SearchCriteria\PostStoreFilter</item>
+            </argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="Panth\Blog\Model\Api\SearchCriteria\CategoryFilterProcessor" type="Magento\Framework\Api\SearchCriteria\CollectionProcessor\FilterProcessor">
+        <arguments>
+            <argument name="customFilters" xsi:type="array">
+                <item name="store_id" xsi:type="object">Panth\Blog\Model\Api\SearchCriteria\CategoryStoreFilter</item>
+            </argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="Panth\Blog\Model\Api\SearchCriteria\PostCollectionProcessor" type="Magento\Framework\Api\SearchCriteria\CollectionProcessor">
+        <arguments>
+            <argument name="processors" xsi:type="array">
+                <item name="filters" xsi:type="object">Panth\Blog\Model\Api\SearchCriteria\PostFilterProcessor</item>
+                <item name="sorting" xsi:type="object">Magento\Framework\Api\SearchCriteria\CollectionProcessor\SortingProcessor</item>
+                <item name="pagination" xsi:type="object">Magento\Framework\Api\SearchCriteria\CollectionProcessor\PaginationProcessor</item>
+            </argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="Panth\Blog\Model\Api\SearchCriteria\CategoryCollectionProcessor" type="Magento\Framework\Api\SearchCriteria\CollectionProcessor">
+        <arguments>
+            <argument name="processors" xsi:type="array">
+                <item name="filters" xsi:type="object">Panth\Blog\Model\Api\SearchCriteria\CategoryFilterProcessor</item>
+                <item name="sorting" xsi:type="object">Magento\Framework\Api\SearchCriteria\CollectionProcessor\SortingProcessor</item>
+                <item name="pagination" xsi:type="object">Magento\Framework\Api\SearchCriteria\CollectionProcessor\PaginationProcessor</item>
+            </argument>
+        </arguments>
+    </virtualType>
+    <type name="Panth\Blog\Model\PostRepository">
+        <arguments>
+            <argument name="collectionProcessor" xsi:type="object">Panth\Blog\Model\Api\SearchCriteria\PostCollectionProcessor</argument>
+        </arguments>
+    </type>
+    <type name="Panth\Blog\Model\CategoryRepository">
+        <arguments>
+            <argument name="collectionProcessor" xsi:type="object">Panth\Blog\Model\Api\SearchCriteria\CategoryCollectionProcessor</argument>
+        </arguments>
+    </type>
+
+    <type name="Panth\Blog\Observer\PostSaveBefore">
+        <arguments>
+            <argument name="readingTimeCalculator" xsi:type="object">Panth\Blog\Model\Reader\ReadingTimeCalculator</argument>
+        </arguments>
+    </type>
+
+    <virtualType name="Panth\Blog\Model\Image\BlogImageUploader" type="Magento\Catalog\Model\ImageUploader">
+        <arguments>
+            <argument name="baseTmpPath" xsi:type="string">blog/tmp</argument>
+            <argument name="basePath" xsi:type="string">blog</argument>
+            <argument name="allowedExtensions" xsi:type="array">
+                <item name="jpg" xsi:type="string">jpg</item>
+                <item name="jpeg" xsi:type="string">jpeg</item>
+                <item name="gif" xsi:type="string">gif</item>
+                <item name="png" xsi:type="string">png</item>
+                <item name="webp" xsi:type="string">webp</item>
+            </argument>
+            <argument name="allowedMimeTypes" xsi:type="array">
+                <item name="jpg" xsi:type="string">image/jpg</item>
+                <item name="jpeg" xsi:type="string">image/jpeg</item>
+                <item name="gif" xsi:type="string">image/gif</item>
+                <item name="png" xsi:type="string">image/png</item>
+                <item name="webp" xsi:type="string">image/webp</item>
+            </argument>
+        </arguments>
+    </virtualType>
+    <type name="Panth\Blog\Model\Image\FormImage">
+        <arguments>
+            <argument name="imageUploader" xsi:type="object">Panth\Blog\Model\Image\BlogImageUploader</argument>
+        </arguments>
+    </type>
+    <type name="Panth\Blog\Controller\Adminhtml\Image\Upload">
+        <arguments>
+            <argument name="imageUploader" xsi:type="object">Panth\Blog\Model\Image\BlogImageUploader</argument>
+        </arguments>
+    </type>
+
+    <!-- Console commands -->
+    <type name="Magento\Framework\Console\CommandList">
+        <arguments>
+            <argument name="commands" xsi:type="array">
+                <item name="panth_blog_url_rewrite_rebuild" xsi:type="object">Panth\Blog\Console\Command\UrlRewriteRebuildCommand</item>
+                <item name="panth_blog_counts_refresh" xsi:type="object">Panth\Blog\Console\Command\CountsRefreshCommand</item>
+                <item name="panth_blog_post_export" xsi:type="object">Panth\Blog\Console\Command\PostExportCommand</item>
+                <item name="panth_blog_post_import" xsi:type="object">Panth\Blog\Console\Command\PostImportCommand</item>
+                <item name="panth_blog_indexnow_ping" xsi:type="object">Panth\Blog\Console\Command\IndexNowPingCommand</item>
+                <item name="panth_blog_tags_auto_robots" xsi:type="object">Panth\Blog\Console\Command\TagsAutoRobotsCommand</item>
+                <item name="panth_blog_og_images_generate" xsi:type="object">Panth\Blog\Console\Command\OgImagesGenerateCommand</item>
+                <item name="panth_blog_seed_demo" xsi:type="object">Panth\Blog\Console\Command\SeedDemoCommand</item>
+            </argument>
+        </arguments>
+    </type>
+
+    <virtualType name="Panth\Blog\Ui\PostGridFulltextFilter" type="Panth\Blog\Ui\Component\Listing\LikeFulltextFilter">
+        <arguments>
+            <argument name="columns" xsi:type="array">
+                <item name="title" xsi:type="string">main_table.title</item>
+                <item name="url_key" xsi:type="string">main_table.url_key</item>
+                <item name="meta_title" xsi:type="string">main_table.meta_title</item>
+                <item name="short_description" xsi:type="string">main_table.short_description</item>
+            </argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="Panth\Blog\Ui\PostGridFilterPool" type="Magento\Framework\View\Element\UiComponent\DataProvider\FilterPool">
+        <arguments>
+            <argument name="appliers" xsi:type="array">
+                <item name="regular" xsi:type="object">Magento\Framework\View\Element\UiComponent\DataProvider\RegularFilter</item>
+                <item name="fulltext" xsi:type="object">Panth\Blog\Ui\PostGridFulltextFilter</item>
+            </argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="Panth\Blog\Ui\PostGridReporting" type="Magento\Framework\View\Element\UiComponent\DataProvider\Reporting">
+        <arguments>
+            <argument name="filterPool" xsi:type="object">Panth\Blog\Ui\PostGridFilterPool</argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="Panth\Blog\Ui\PostGridDataProvider" type="Magento\Framework\View\Element\UiComponent\DataProvider\DataProvider">
+        <arguments>
+            <argument name="reporting" xsi:type="object">Panth\Blog\Ui\PostGridReporting</argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="Panth\Blog\Ui\CommentGridFulltextFilter" type="Panth\Blog\Ui\Component\Listing\LikeFulltextFilter">
+        <arguments>
+            <argument name="columns" xsi:type="array">
+                <item name="author_name" xsi:type="string">main_table.author_name</item>
+                <item name="author_email" xsi:type="string">main_table.author_email</item>
+                <item name="content" xsi:type="string">main_table.content</item>
+            </argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="Panth\Blog\Ui\CommentGridFilterPool" type="Magento\Framework\View\Element\UiComponent\DataProvider\FilterPool">
+        <arguments>
+            <argument name="appliers" xsi:type="array">
+                <item name="regular" xsi:type="object">Magento\Framework\View\Element\UiComponent\DataProvider\RegularFilter</item>
+                <item name="fulltext" xsi:type="object">Panth\Blog\Ui\CommentGridFulltextFilter</item>
+            </argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="Panth\Blog\Ui\CommentGridReporting" type="Magento\Framework\View\Element\UiComponent\DataProvider\Reporting">
+        <arguments>
+            <argument name="filterPool" xsi:type="object">Panth\Blog\Ui\CommentGridFilterPool</argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="Panth\Blog\Ui\CommentGridDataProvider" type="Magento\Framework\View\Element\UiComponent\DataProvider\DataProvider">
+        <arguments>
+            <argument name="reporting" xsi:type="object">Panth\Blog\Ui\CommentGridReporting</argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="Panth\Blog\Ui\CategoryGridFulltextFilter" type="Panth\Blog\Ui\Component\Listing\LikeFulltextFilter">
+        <arguments>
+            <argument name="columns" xsi:type="array">
+                <item name="name" xsi:type="string">main_table.name</item>
+                <item name="url_key" xsi:type="string">main_table.url_key</item>
+                <item name="meta_title" xsi:type="string">main_table.meta_title</item>
+                <item name="description" xsi:type="string">main_table.description</item>
+            </argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="Panth\Blog\Ui\CategoryGridFilterPool" type="Magento\Framework\View\Element\UiComponent\DataProvider\FilterPool">
+        <arguments>
+            <argument name="appliers" xsi:type="array">
+                <item name="regular" xsi:type="object">Magento\Framework\View\Element\UiComponent\DataProvider\RegularFilter</item>
+                <item name="fulltext" xsi:type="object">Panth\Blog\Ui\CategoryGridFulltextFilter</item>
+            </argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="Panth\Blog\Ui\CategoryGridReporting" type="Magento\Framework\View\Element\UiComponent\DataProvider\Reporting">
+        <arguments>
+            <argument name="filterPool" xsi:type="object">Panth\Blog\Ui\CategoryGridFilterPool</argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="Panth\Blog\Ui\CategoryGridDataProvider" type="Magento\Framework\View\Element\UiComponent\DataProvider\DataProvider">
+        <arguments>
+            <argument name="reporting" xsi:type="object">Panth\Blog\Ui\CategoryGridReporting</argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="Panth\Blog\Ui\TagGridFulltextFilter" type="Panth\Blog\Ui\Component\Listing\LikeFulltextFilter">
+        <arguments>
+            <argument name="columns" xsi:type="array">
+                <item name="name" xsi:type="string">main_table.name</item>
+                <item name="url_key" xsi:type="string">main_table.url_key</item>
+                <item name="description" xsi:type="string">main_table.description</item>
+            </argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="Panth\Blog\Ui\TagGridFilterPool" type="Magento\Framework\View\Element\UiComponent\DataProvider\FilterPool">
+        <arguments>
+            <argument name="appliers" xsi:type="array">
+                <item name="regular" xsi:type="object">Magento\Framework\View\Element\UiComponent\DataProvider\RegularFilter</item>
+                <item name="fulltext" xsi:type="object">Panth\Blog\Ui\TagGridFulltextFilter</item>
+            </argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="Panth\Blog\Ui\TagGridReporting" type="Magento\Framework\View\Element\UiComponent\DataProvider\Reporting">
+        <arguments>
+            <argument name="filterPool" xsi:type="object">Panth\Blog\Ui\TagGridFilterPool</argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="Panth\Blog\Ui\TagGridDataProvider" type="Magento\Framework\View\Element\UiComponent\DataProvider\DataProvider">
+        <arguments>
+            <argument name="reporting" xsi:type="object">Panth\Blog\Ui\TagGridReporting</argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="Panth\Blog\Ui\AuthorGridFulltextFilter" type="Panth\Blog\Ui\Component\Listing\LikeFulltextFilter">
+        <arguments>
+            <argument name="columns" xsi:type="array">
+                <item name="display_name" xsi:type="string">main_table.display_name</item>
+                <item name="email" xsi:type="string">main_table.email</item>
+                <item name="url_key" xsi:type="string">main_table.url_key</item>
+                <item name="role" xsi:type="string">main_table.role</item>
+                <item name="short_bio" xsi:type="string">main_table.short_bio</item>
+            </argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="Panth\Blog\Ui\AuthorGridFilterPool" type="Magento\Framework\View\Element\UiComponent\DataProvider\FilterPool">
+        <arguments>
+            <argument name="appliers" xsi:type="array">
+                <item name="regular" xsi:type="object">Magento\Framework\View\Element\UiComponent\DataProvider\RegularFilter</item>
+                <item name="fulltext" xsi:type="object">Panth\Blog\Ui\AuthorGridFulltextFilter</item>
+            </argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="Panth\Blog\Ui\AuthorGridReporting" type="Magento\Framework\View\Element\UiComponent\DataProvider\Reporting">
+        <arguments>
+            <argument name="filterPool" xsi:type="object">Panth\Blog\Ui\AuthorGridFilterPool</argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="Panth\Blog\Ui\AuthorGridDataProvider" type="Magento\Framework\View\Element\UiComponent\DataProvider\DataProvider">
+        <arguments>
+            <argument name="reporting" xsi:type="object">Panth\Blog\Ui\AuthorGridReporting</argument>
+        </arguments>
+    </virtualType>
+</config>

@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      layout="1column"
+      xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+    <head>
+        <css src="Panth_Blog::css/blog.css"/>
+    </head>
+    <body>
+        <referenceBlock name="page.main.title" remove="true"/>
+        <referenceContainer name="page.main.title" remove="true"/>
+        <referenceContainer name="content">
+            <block class="Panth\Blog\Block\CacheTags" name="panth_blog.cache_tags"/>
+            <block class="Magento\Framework\View\Element\Template"
+                   name="panth_blog.search.results"
+                   template="Panth_Blog::search/results.phtml">
+                <arguments>
+                    <argument name="view_model" xsi:type="object">Panth\Blog\ViewModel\SearchResults</argument>
+                    <argument name="sidebar_view_model" xsi:type="object">Panth\Blog\ViewModel\Sidebar</argument>
+                    <argument name="pagination_view_model" xsi:type="object">Panth\Blog\ViewModel\Pagination</argument>
+                </arguments>
+            </block>
+        </referenceContainer>
+    </body>
+</page>

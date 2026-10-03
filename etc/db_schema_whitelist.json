@@ -1,0 +1,270 @@
+{
+    "panth_blog_post": {
+        "column": {
+            "post_id": true,
+            "url_key": true,
+            "title": true,
+            "meta_title": true,
+            "meta_description": true,
+            "meta_keywords": true,
+            "meta_robots": true,
+            "canonical_url": true,
+            "short_description": true,
+            "content": true,
+            "featured_image": true,
+            "featured_image_alt": true,
+            "og_image": true,
+            "author_id": true,
+            "status": true,
+            "published_at": true,
+            "created_at": true,
+            "updated_at": true,
+            "is_featured": true,
+            "reading_time_min": true,
+            "word_count": true,
+            "view_count": true,
+            "like_count": true,
+            "layout_template": true,
+            "enable_comments": true,
+            "enable_toc": true,
+            "tldr_summary": true,
+            "citation_list": true,
+            "sort_order": true
+        },
+        "index": {
+            "PANTH_BLOG_POST_STATUS": true,
+            "PANTH_BLOG_POST_PUBLISHED_AT": true,
+            "PANTH_BLOG_POST_AUTHOR_ID": true,
+            "PANTH_BLOG_POST_IS_FEATURED": true
+        },
+        "constraint": {
+            "PRIMARY": true,
+            "PANTH_BLOG_POST_URL_KEY": true
+        }
+    },
+    "panth_blog_post_value": {
+        "column": {
+            "value_id": true,
+            "post_id": true,
+            "store_id": true,
+            "title": true,
+            "meta_title": true,
+            "meta_description": true,
+            "short_description": true,
+            "content": true
+        },
+        "constraint": {
+            "PRIMARY": true,
+            "PANTH_BLOG_POST_VALUE_POST_ID_STORE_ID": true,
+            "PANTH_BLOG_POST_VALUE_POST_ID_PANTH_BLOG_POST_POST_ID": true,
+            "PANTH_BLOG_POST_VALUE_STORE_ID_STORE_STORE_ID": true
+        }
+    },
+    "panth_blog_category": {
+        "column": {
+            "category_id": true,
+            "parent_id": true,
+            "path": true,
+            "level": true,
+            "url_key": true,
+            "name": true,
+            "description": true,
+            "image": true,
+            "meta_title": true,
+            "meta_description": true,
+            "meta_robots": true,
+            "sort_order": true,
+            "is_active": true,
+            "post_count": true,
+            "posts_per_page": true,
+            "template": true,
+            "created_at": true,
+            "updated_at": true
+        },
+        "index": {
+            "PANTH_BLOG_CATEGORY_PARENT_ID": true,
+            "PANTH_BLOG_CATEGORY_PATH": true,
+            "PANTH_BLOG_CATEGORY_IS_ACTIVE": true
+        },
+        "constraint": {
+            "PRIMARY": true,
+            "PANTH_BLOG_CATEGORY_URL_KEY": true
+        }
+    },
+    "panth_blog_tag": {
+        "column": {
+            "tag_id": true,
+            "url_key": true,
+            "name": true,
+            "description": true,
+            "meta_robots": true,
+            "post_count": true,
+            "created_at": true,
+            "updated_at": true
+        },
+        "constraint": {
+            "PRIMARY": true,
+            "PANTH_BLOG_TAG_URL_KEY": true
+        }
+    },
+    "panth_blog_author": {
+        "column": {
+            "author_id": true,
+            "user_id": true,
+            "url_key": true,
+            "display_name": true,
+            "role": true,
+            "short_bio": true,
+            "long_bio": true,
+            "avatar": true,
+            "email": true,
+            "links": true,
+            "knows_about": true,
+            "alumni_of": true,
+            "same_as": true,
+            "is_active": true,
+            "sort_order": true,
+            "created_at": true,
+            "updated_at": true
+        },
+        "index": {
+            "PANTH_BLOG_AUTHOR_IS_ACTIVE": true
+        },
+        "constraint": {
+            "PRIMARY": true,
+            "PANTH_BLOG_AUTHOR_URL_KEY": true
+        }
+    },
+    "panth_blog_post_category": {
+        "column": {
+            "post_id": true,
+            "category_id": true,
+            "position": true,
+            "is_primary": true
+        },
+        "index": {
+            "PANTH_BLOG_POST_CATEGORY_CATEGORY_ID": true
+        },
+        "constraint": {
+            "PRIMARY": true,
+            "PANTH_BLOG_POST_CATEGORY_POST_ID_PANTH_BLOG_POST_POST_ID": true,
+            "PANTH_BLOG_POST_CATEGORY_CATEGORY_ID_PANTH_BLOG_CATEGORY_CATEGORY_ID": true
+        }
+    },
+    "panth_blog_post_tag": {
+        "column": {
+            "post_id": true,
+            "tag_id": true
+        },
+        "index": {
+            "PANTH_BLOG_POST_TAG_TAG_ID": true
+        },
+        "constraint": {
+            "PRIMARY": true,
+            "PANTH_BLOG_POST_TAG_POST_ID_PANTH_BLOG_POST_POST_ID": true,
+            "PANTH_BLOG_POST_TAG_TAG_ID_PANTH_BLOG_TAG_TAG_ID": true
+        }
+    },
+    "panth_blog_post_store": {
+        "column": {
+            "post_id": true,
+            "store_id": true
+        },
+        "index": {
+            "PANTH_BLOG_POST_STORE_STORE_ID": true
+        },
+        "constraint": {
+            "PRIMARY": true,
+            "PANTH_BLOG_POST_STORE_POST_ID_PANTH_BLOG_POST_POST_ID": true,
+            "PANTH_BLOG_POST_STORE_STORE_ID_STORE_STORE_ID": true
+        }
+    },
+    "panth_blog_category_store": {
+        "column": {
+            "category_id": true,
+            "store_id": true
+        },
+        "index": {
+            "PANTH_BLOG_CATEGORY_STORE_STORE_ID": true
+        },
+        "constraint": {
+            "PRIMARY": true,
+            "PANTH_BLOG_CATEGORY_STORE_CATEGORY_ID_PANTH_BLOG_CATEGORY_CATEGORY_ID": true,
+            "PANTH_BLOG_CATEGORY_STORE_STORE_ID_STORE_STORE_ID": true
+        }
+    },
+    "panth_blog_post_related": {
+        "column": {
+            "post_id": true,
+            "related_post_id": true,
+            "sort_order": true
+        },
+        "index": {
+            "PANTH_BLOG_POST_RELATED_RELATED_POST_ID": true
+        },
+        "constraint": {
+            "PRIMARY": true,
+            "PANTH_BLOG_POST_RELATED_POST_ID_PANTH_BLOG_POST_POST_ID": true,
+            "PANTH_BLOG_POST_RELATED_RELATED_POST_ID_PANTH_BLOG_POST_POST_ID": true
+        }
+    },
+    "panth_blog_comment": {
+        "column": {
+            "comment_id": true,
+            "post_id": true,
+            "parent_id": true,
+            "author_name": true,
+            "author_email": true,
+            "author_website": true,
+            "content": true,
+            "status": true,
+            "ip": true,
+            "user_agent": true,
+            "created_at": true,
+            "approved_at": true,
+            "votes_up": true,
+            "votes_down": true
+        },
+        "index": {
+            "PANTH_BLOG_COMMENT_STATUS": true,
+            "PANTH_BLOG_COMMENT_PARENT_ID": true
+        },
+        "constraint": {
+            "PRIMARY": true,
+            "PANTH_BLOG_COMMENT_POST_ID_PANTH_BLOG_POST_POST_ID": true
+        }
+    },
+    "panth_blog_url_history": {
+        "column": {
+            "id": true,
+            "entity_type": true,
+            "entity_id": true,
+            "old_url_key": true,
+            "new_url_key": true,
+            "redirected_at": true
+        },
+        "index": {
+            "PANTH_BLOG_URL_HISTORY_OLD_URL_KEY": true,
+            "PANTH_BLOG_URL_HISTORY_ENTITY": true
+        },
+        "constraint": {
+            "PRIMARY": true
+        }
+    },
+    "panth_blog_indexnow_queue": {
+        "column": {
+            "id": true,
+            "url": true,
+            "store_id": true,
+            "status": true,
+            "queued_at": true,
+            "sent_at": true
+        },
+        "index": {
+            "PANTH_BLOG_INDEXNOW_QUEUE_STATUS": true
+        },
+        "constraint": {
+            "PRIMARY": true
+        }
+    }
+}

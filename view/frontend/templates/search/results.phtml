@@ -1,0 +1,119 @@
+<?php
+declare(strict_types=1);
+/**
+ * @var \Magento\Framework\View\Element\Template $block
+ * @var \Magento\Framework\Escaper $escaper
+ * @var \Panth\Blog\ViewModel\SearchResults $viewModel
+ * @var \Panth\Blog\ViewModel\Sidebar $sidebarViewModel
+ * @var \Panth\Blog\ViewModel\Pagination $paginationViewModel
+ */
+$viewModel = $block->getData('view_model');
+$sidebarViewModel = $block->getData('sidebar_view_model');
+$paginationViewModel = $block->getData('pagination_view_model');
+
+$query = method_exists($viewModel, 'getQuery') ? (string)$viewModel->getQuery() : '';
+
+$results = [];
+if (method_exists($viewModel, 'getResults')) {
+    $results = $viewModel->getResults() ?? [];
+} elseif (method_exists($viewModel, 'getPosts')) {
+    $results = $viewModel->getPosts() ?? [];
+}
+
+$currentPage = method_exists($viewModel, 'getCurrentPage') ? (int)$viewModel->getCurrentPage() : 1;
+if (method_exists($viewModel, 'getTotalResults')) {
+    $total = (int)$viewModel->getTotalResults();
+} elseif (method_exists($viewModel, 'getTotalPosts')) {
+    $total = (int)$viewModel->getTotalPosts();
+} else {
+    $total = count($results);
+}
+$perPage = method_exists($viewModel, 'getPostsPerPage') ? (int)$viewModel->getPostsPerPage() : 10;
+$searchUrl = method_exists($viewModel, 'getSearchActionUrl') ? (string)$viewModel->getSearchActionUrl() : '/blog/search';
+$breadcrumbs = method_exists($viewModel, 'getBreadcrumbs') ? ($viewModel->getBreadcrumbs() ?? []) : [];
+?>
+<section class="pb-page pb-search-page">
+    <?php if (!empty($breadcrumbs)): ?>
+        <?= $block->getLayout()
+            ->createBlock(\Magento\Framework\View\Element\Template::class)
+            ->setTemplate('Panth_Blog::breadcrumbs.phtml')
+            ->setData('items', $breadcrumbs)
+            ->toHtml() ?>
+    <?php endif; ?>
+
+    <section class="pb-search-hero">
+        <h1 class="pb-search-hero__title"><?= $escaper->escapeHtml(__('Search the blog')) ?></h1>
+        <form class="pb-search-form pb-search-form--large"
+              method="get"
+              action="<?= $escaper->escapeUrl($searchUrl) ?>"
+              role="search">
+            <label for="pb-search-q" class="sr-only"><?= $escaper->escapeHtml(__('Search query')) ?></label>
+            <input id="pb-search-q"
+                   type="search"
+                   name="q"
+                   class="pb-search-form__input"
+                   value="<?= $escaper->escapeHtmlAttr($query) ?>"
+                   placeholder="<?= $escaper->escapeHtmlAttr(__('Search the blog')) ?>"
+                   autocomplete="off"
+                   autofocus/>
+            <button type="submit" class="pb-btn pb-btn--primary">
+                <?= $escaper->escapeHtml(__('Search')) ?>
+            </button>
+        </form>
+    </section>
+
+    <?php if ($query !== ''): ?>
+        <h2 class="pb-search-results__count">
+            <?php if ($total === 0): ?>
+                <?= $escaper->escapeHtml(__('No results for "%1"', $query)) ?>
+            <?php elseif ($total === 1): ?>
+                <?= $escaper->escapeHtml(__('1 result for "%1"', $query)) ?>
+            <?php else: ?>
+                <?= $escaper->escapeHtml(__('%1 results for "%2"', (int)$total, $query)) ?>
+            <?php endif; ?>
+        </h2>
+    <?php endif; ?>
+
+    <div class="pb-layout">
+        <main class="pb-layout__main">
+            <?php if ($query === ''): ?>
+                <p class="pb-empty"><?= $escaper->escapeHtml(__('Enter a search term above to find posts.')) ?></p>
+            <?php elseif (empty($results)): ?>
+                <p class="pb-empty"><?= $escaper->escapeHtml(__('No posts matched your search.')) ?></p>
+            <?php else: ?>
+                <?= $block->getLayout()
+                    ->createBlock(\Magento\Framework\View\Element\Template::class)
+                    ->setTemplate('Panth_Blog::list/list.phtml')
+                    ->setData('badges_view_model', $block->getData('badges_view_model'))
+                    ->setData('posts', $results)
+                    ->setData('view_model', $viewModel)
+                    ->toHtml() ?>
+
+                <?php if ($paginationViewModel && method_exists($paginationViewModel, 'build') && $total > $perPage): ?>
+                    <?php
+                    $pagination = $paginationViewModel->build(
+                        $currentPage,
+                        $total,
+                        $perPage,
+                        static fn(int $p) => method_exists($viewModel, 'getPageUrl') ? $viewModel->getPageUrl($p) : '#'
+                    );
+                    ?>
+                    <?= $block->getLayout()
+                        ->createBlock(\Magento\Framework\View\Element\Template::class)
+                        ->setTemplate('Panth_Blog::pagination.phtml')
+                        ->setData('pagination', $pagination)
+                        ->toHtml() ?>
+                <?php endif; ?>
+            <?php endif; ?>
+        </main>
+        <?php if ($sidebarViewModel): ?>
+            <aside class="pb-layout__sidebar">
+                <?= $block->getLayout()
+                    ->createBlock(\Magento\Framework\View\Element\Template::class)
+                    ->setTemplate('Panth_Blog::sidebar/sidebar.phtml')
+                    ->setData('view_model', $sidebarViewModel)
+                    ->toHtml() ?>
+            </aside>
+        <?php endif; ?>
+    </div>
+</section>

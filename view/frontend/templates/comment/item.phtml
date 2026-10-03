@@ -1,0 +1,21 @@
+<?php
+declare(strict_types=1);
+/** @var \Magento\Framework\View\Element\Template $block */
+/** @var \Magento\Framework\Escaper $escaper */
+$c = $block->getData('comment');
+if (!$c) {
+    return;
+}
+?>
+<li class="pb-comment">
+    <div class="pb-comment__avatar" aria-hidden="true"></div>
+    <div class="pb-comment__body">
+        <p class="pb-comment__author"><?= $escaper->escapeHtml((string)$c->getAuthorName()) ?></p>
+        <time class="pb-comment__date" datetime="<?= $escaper->escapeHtmlAttr(date('c', strtotime((string)$c->getCreatedAt()))) ?>">
+            <?= $escaper->escapeHtml(date('M j, Y', strtotime((string)$c->getCreatedAt()))) ?>
+        </time>
+        <div class="pb-comment__content">
+            <?= /** @noEscape */ nl2br($escaper->escapeHtml((string)$c->getContent())) ?>
+        </div>
+    </div>
+</li>

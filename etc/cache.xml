@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:Cache/etc/cache.xsd">
+    <type name="panth_blog_feed" translate="label,description" instance="Panth\Blog\Model\Cache\Type\Feed">
+        <label>Panth Blog Feed</label>
+        <description>RSS / Atom feed XML cache for Panth Blog.</description>
+    </type>
+    <type name="panth_blog_jsonld" translate="label,description" instance="Panth\Blog\Model\Cache\Type\JsonLd">
+        <label>Panth Blog JSON-LD</label>
+        <description>Per-entity JSON-LD payload cache for Panth Blog.</description>
+    </type>
+    <type name="panth_blog_llmstxt" translate="label,description" instance="Panth\Blog\Model\Cache\Type\LlmsTxt">
+        <label>Panth Blog llms.txt</label>
+        <description>Cache of the blog section rendered into /llms.txt.</description>
+    </type>
+</config>

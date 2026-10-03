@@ -1,0 +1,29 @@
+<?php
+declare(strict_types=1);
+/** @var \Magento\Framework\View\Element\Template $block */
+/** @var \Magento\Framework\Escaper $escaper */
+$items = (array)$block->getData('items');
+if (empty($items)) {
+    return;
+}
+?>
+<nav class="pb-breadcrumbs" aria-label="<?= $escaper->escapeHtmlAttr(__('Breadcrumb')) ?>">
+    <ol class="pb-breadcrumbs__list">
+        <?php $last = count($items) - 1; foreach ($items as $i => $crumb):
+            $name = (string)($crumb['name'] ?? $crumb['label'] ?? '');
+            $url = (string)($crumb['item'] ?? $crumb['link'] ?? $crumb['url'] ?? '');
+            if ($name === '') {
+                continue;
+            }
+        ?>
+            <li class="pb-breadcrumbs__item">
+                <?php if ($i < $last && $url !== ''): ?>
+                    <a href="<?= $escaper->escapeUrl($url) ?>"><?= $escaper->escapeHtml($name) ?></a>
+                    <span class="pb-breadcrumbs__separator" aria-hidden="true">/</span>
+                <?php else: ?>
+                    <span aria-current="page"><?= $escaper->escapeHtml($name) ?></span>
+                <?php endif; ?>
+            </li>
+        <?php endforeach; ?>
+    </ol>
+</nav>

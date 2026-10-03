@@ -1,0 +1,47 @@
+<?php
+declare(strict_types=1);
+/**
+ * @var \Magento\Framework\View\Element\Template $block
+ * @var \Magento\Framework\Escaper $escaper
+ * @var \Panth\Blog\ViewModel\PostView $vm
+ */
+$related = (array)$block->getData('related');
+$vm = $block->getData('view_model');
+if (empty($related) || !$vm) {
+    return;
+}
+?>
+<section class="pb-related">
+    <h2 class="pb-related__title"><?= $escaper->escapeHtml(__('Related posts')) ?></h2>
+    <ul class="pb-related__list">
+        <?php foreach (array_slice($related, 0, 3) as $rp): ?>
+            <?php
+            $url = (string)$vm->getPostUrl($rp);
+            $img = (string)($rp->getFeaturedImage() ?? '');
+            $rpTitle = (string)$rp->getTitle();
+            $rpShort = method_exists($rp, 'getShortDescription') ? (string)($rp->getShortDescription() ?? '') : '';
+            ?>
+            <li class="pb-post-card pb-post-card--compact">
+                <a class="pb-post-card__media" href="<?= $escaper->escapeUrl($url) ?>">
+                    <?php if ($img !== ''): ?>
+                        <img src="<?= $escaper->escapeUrl($vm->getMediaUrl($img)) ?>"
+                             alt=""
+                             loading="lazy"/>
+                    <?php else: ?>
+                        <span class="pb-post-card__media-placeholder" aria-hidden="true"></span>
+                    <?php endif; ?>
+                </a>
+                <div class="pb-post-card__body">
+                    <h3 class="pb-post-card__title">
+                        <a href="<?= $escaper->escapeUrl($url) ?>">
+                            <?= $escaper->escapeHtml($rpTitle) ?>
+                        </a>
+                    </h3>
+                    <?php if ($rpShort !== ''): ?>
+                        <p class="pb-post-card__excerpt"><?= $escaper->escapeHtml($rpShort) ?></p>
+                    <?php endif; ?>
+                </div>
+            </li>
+        <?php endforeach; ?>
+    </ul>
+</section>
