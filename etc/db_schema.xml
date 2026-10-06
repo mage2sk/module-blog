@@ -1,0 +1,331 @@
+<?xml version="1.0"?>
+<schema xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:Setup/Declaration/Schema/etc/schema.xsd">
+
+    <!-- Posts -->
+    <table name="panth_blog_post" resource="default" engine="innodb" comment="Panth Blog Posts">
+        <column xsi:type="int" name="post_id" unsigned="true" nullable="false" identity="true" comment="Post ID"/>
+        <column xsi:type="varchar" name="url_key" nullable="false" length="160" comment="URL key (slug)"/>
+        <column xsi:type="varchar" name="title" nullable="false" length="255" comment="Title (H1)"/>
+        <column xsi:type="varchar" name="meta_title" nullable="true" length="255" comment="Meta title override"/>
+        <column xsi:type="varchar" name="meta_description" nullable="true" length="320" comment="Meta description"/>
+        <column xsi:type="varchar" name="meta_keywords" nullable="true" length="500" comment="Meta keywords"/>
+        <column xsi:type="varchar" name="meta_robots" nullable="false" length="32" default="index,follow" comment="Robots directive"/>
+        <column xsi:type="varchar" name="canonical_url" nullable="true" length="500" comment="Canonical override"/>
+        <column xsi:type="text" name="short_description" nullable="true" comment="TL;DR / lede"/>
+        <column xsi:type="mediumtext" name="content" nullable="true" comment="Body HTML"/>
+        <column xsi:type="varchar" name="featured_image" nullable="true" length="500" comment="Featured image path"/>
+        <column xsi:type="varchar" name="featured_image_alt" nullable="true" length="255" comment="Featured image alt"/>
+        <column xsi:type="varchar" name="og_image" nullable="true" length="500" comment="OG image path"/>
+        <column xsi:type="int" name="author_id" unsigned="true" nullable="true" comment="Author ID"/>
+        <column xsi:type="varchar" name="status" nullable="false" length="16" default="draft" comment="draft|scheduled|published|archived"/>
+        <column xsi:type="timestamp" name="published_at" nullable="true" comment="Published at"/>
+        <column xsi:type="timestamp" name="created_at" nullable="false" default="CURRENT_TIMESTAMP" comment="Created at"/>
+        <column xsi:type="timestamp" name="updated_at" nullable="false" default="CURRENT_TIMESTAMP" on_update="true" comment="Updated at"/>
+        <column xsi:type="smallint" name="is_featured" unsigned="true" nullable="false" default="0" comment="Featured on /blog index"/>
+        <column xsi:type="smallint" name="reading_time_min" unsigned="true" nullable="true" comment="Reading time minutes"/>
+        <column xsi:type="int" name="word_count" unsigned="true" nullable="true" comment="Word count"/>
+        <column xsi:type="int" name="view_count" unsigned="true" nullable="false" default="0" comment="View count"/>
+        <column xsi:type="int" name="like_count" unsigned="true" nullable="false" default="0" comment="Like count"/>
+        <column xsi:type="varchar" name="layout_template" nullable="false" length="64" default="default" comment="Layout template variant"/>
+        <column xsi:type="smallint" name="enable_comments" unsigned="true" nullable="false" default="1" comment="Comments enabled per-post"/>
+        <column xsi:type="smallint" name="enable_toc" unsigned="true" nullable="false" default="1" comment="TOC enabled per-post"/>
+        <column xsi:type="text" name="tldr_summary" nullable="true" comment="Explicit TL;DR override"/>
+        <column xsi:type="text" name="citation_list" nullable="true" comment="Citation list JSON"/>
+        <column xsi:type="int" name="sort_order" nullable="false" default="0" comment="Manual sort order"/>
+        <constraint xsi:type="primary" referenceId="PRIMARY">
+            <column name="post_id"/>
+        </constraint>
+        <constraint xsi:type="unique" referenceId="PANTH_BLOG_POST_URL_KEY">
+            <column name="url_key"/>
+        </constraint>
+        <index referenceId="PANTH_BLOG_POST_STATUS" indexType="btree">
+            <column name="status"/>
+        </index>
+        <index referenceId="PANTH_BLOG_POST_PUBLISHED_AT" indexType="btree">
+            <column name="published_at"/>
+        </index>
+        <index referenceId="PANTH_BLOG_POST_AUTHOR_ID" indexType="btree">
+            <column name="author_id"/>
+        </index>
+        <index referenceId="PANTH_BLOG_POST_IS_FEATURED" indexType="btree">
+            <column name="is_featured"/>
+        </index>
+    </table>
+
+    <!-- Per-store post overrides -->
+    <table name="panth_blog_post_value" resource="default" engine="innodb" comment="Panth Blog Post per-store override">
+        <column xsi:type="int" name="value_id" unsigned="true" nullable="false" identity="true" comment="Value ID"/>
+        <column xsi:type="int" name="post_id" unsigned="true" nullable="false" comment="Post ID"/>
+        <column xsi:type="smallint" name="store_id" unsigned="true" nullable="false" comment="Store ID"/>
+        <column xsi:type="varchar" name="title" nullable="true" length="255" comment="Title override"/>
+        <column xsi:type="varchar" name="meta_title" nullable="true" length="255" comment="Meta title override"/>
+        <column xsi:type="varchar" name="meta_description" nullable="true" length="320" comment="Meta description override"/>
+        <column xsi:type="text" name="short_description" nullable="true" comment="Short description override"/>
+        <column xsi:type="mediumtext" name="content" nullable="true" comment="Content override"/>
+        <constraint xsi:type="primary" referenceId="PRIMARY">
+            <column name="value_id"/>
+        </constraint>
+        <constraint xsi:type="unique" referenceId="PANTH_BLOG_POST_VALUE_POST_ID_STORE_ID">
+            <column name="post_id"/>
+            <column name="store_id"/>
+        </constraint>
+        <constraint xsi:type="foreign" referenceId="PANTH_BLOG_POST_VALUE_POST_ID_PANTH_BLOG_POST_POST_ID"
+                    table="panth_blog_post_value" column="post_id"
+                    referenceTable="panth_blog_post" referenceColumn="post_id" onDelete="CASCADE"/>
+        <constraint xsi:type="foreign" referenceId="PANTH_BLOG_POST_VALUE_STORE_ID_STORE_STORE_ID"
+                    table="panth_blog_post_value" column="store_id"
+                    referenceTable="store" referenceColumn="store_id" onDelete="CASCADE"/>
+    </table>
+
+    <!-- Categories (hierarchical) -->
+    <table name="panth_blog_category" resource="default" engine="innodb" comment="Panth Blog Categories">
+        <column xsi:type="int" name="category_id" unsigned="true" nullable="false" identity="true" comment="Category ID"/>
+        <column xsi:type="int" name="parent_id" unsigned="true" nullable="true" comment="Parent ID"/>
+        <column xsi:type="varchar" name="path" nullable="true" length="255" comment="Tree path like 1/3/9"/>
+        <column xsi:type="smallint" name="level" unsigned="true" nullable="false" default="1" comment="Depth"/>
+        <column xsi:type="varchar" name="url_key" nullable="false" length="100" comment="URL key"/>
+        <column xsi:type="varchar" name="name" nullable="false" length="255" comment="Display name"/>
+        <column xsi:type="text" name="description" nullable="true" comment="Description"/>
+        <column xsi:type="varchar" name="image" nullable="true" length="500" comment="Banner image"/>
+        <column xsi:type="varchar" name="meta_title" nullable="true" length="255" comment="Meta title"/>
+        <column xsi:type="varchar" name="meta_description" nullable="true" length="320" comment="Meta description"/>
+        <column xsi:type="varchar" name="meta_robots" nullable="false" length="32" default="index,follow" comment="Robots"/>
+        <column xsi:type="int" name="sort_order" nullable="false" default="0" comment="Sort order"/>
+        <column xsi:type="smallint" name="is_active" unsigned="true" nullable="false" default="1" comment="Is active"/>
+        <column xsi:type="int" name="post_count" unsigned="true" nullable="false" default="0" comment="Denormalised post count"/>
+        <column xsi:type="smallint" name="posts_per_page" unsigned="true" nullable="true" comment="Override posts per page"/>
+        <column xsi:type="varchar" name="template" nullable="false" length="32" default="grid" comment="Layout template"/>
+        <column xsi:type="timestamp" name="created_at" nullable="false" default="CURRENT_TIMESTAMP" comment="Created at"/>
+        <column xsi:type="timestamp" name="updated_at" nullable="false" default="CURRENT_TIMESTAMP" on_update="true" comment="Updated at"/>
+        <constraint xsi:type="primary" referenceId="PRIMARY">
+            <column name="category_id"/>
+        </constraint>
+        <constraint xsi:type="unique" referenceId="PANTH_BLOG_CATEGORY_URL_KEY">
+            <column name="url_key"/>
+        </constraint>
+        <index referenceId="PANTH_BLOG_CATEGORY_PARENT_ID" indexType="btree">
+            <column name="parent_id"/>
+        </index>
+        <index referenceId="PANTH_BLOG_CATEGORY_PATH" indexType="btree">
+            <column name="path"/>
+        </index>
+        <index referenceId="PANTH_BLOG_CATEGORY_IS_ACTIVE" indexType="btree">
+            <column name="is_active"/>
+        </index>
+    </table>
+
+    <!-- Tags -->
+    <table name="panth_blog_tag" resource="default" engine="innodb" comment="Panth Blog Tags">
+        <column xsi:type="int" name="tag_id" unsigned="true" nullable="false" identity="true" comment="Tag ID"/>
+        <column xsi:type="varchar" name="url_key" nullable="false" length="80" comment="URL key"/>
+        <column xsi:type="varchar" name="name" nullable="false" length="120" comment="Display name"/>
+        <column xsi:type="text" name="description" nullable="true" comment="Description"/>
+        <column xsi:type="varchar" name="meta_robots" nullable="false" length="32" default="index,follow" comment="Robots directive (auto-flips to noindex if thin)"/>
+        <column xsi:type="int" name="post_count" unsigned="true" nullable="false" default="0" comment="Denormalised post count"/>
+        <column xsi:type="timestamp" name="created_at" nullable="false" default="CURRENT_TIMESTAMP" comment="Created at"/>
+        <column xsi:type="timestamp" name="updated_at" nullable="false" default="CURRENT_TIMESTAMP" on_update="true" comment="Updated at"/>
+        <constraint xsi:type="primary" referenceId="PRIMARY">
+            <column name="tag_id"/>
+        </constraint>
+        <constraint xsi:type="unique" referenceId="PANTH_BLOG_TAG_URL_KEY">
+            <column name="url_key"/>
+        </constraint>
+    </table>
+
+    <!-- Authors -->
+    <table name="panth_blog_author" resource="default" engine="innodb" comment="Panth Blog Authors">
+        <column xsi:type="int" name="author_id" unsigned="true" nullable="false" identity="true" comment="Author ID"/>
+        <column xsi:type="int" name="user_id" unsigned="true" nullable="true" comment="Admin user ID"/>
+        <column xsi:type="varchar" name="url_key" nullable="false" length="80" comment="URL key"/>
+        <column xsi:type="varchar" name="display_name" nullable="false" length="120" comment="Display name"/>
+        <column xsi:type="varchar" name="role" nullable="true" length="120" comment="Role/job title"/>
+        <column xsi:type="varchar" name="short_bio" nullable="true" length="500" comment="Short bio"/>
+        <column xsi:type="text" name="long_bio" nullable="true" comment="Long bio"/>
+        <column xsi:type="varchar" name="avatar" nullable="true" length="500" comment="Avatar path"/>
+        <column xsi:type="varchar" name="email" nullable="true" length="255" comment="Public email"/>
+        <column xsi:type="text" name="links" nullable="true" comment="Social links JSON"/>
+        <column xsi:type="text" name="knows_about" nullable="true" comment="Person.knowsAbout JSON"/>
+        <column xsi:type="varchar" name="alumni_of" nullable="true" length="255" comment="Alumni of"/>
+        <column xsi:type="text" name="same_as" nullable="true" comment="Person.sameAs URL list JSON"/>
+        <column xsi:type="smallint" name="is_active" unsigned="true" nullable="false" default="1" comment="Is active"/>
+        <column xsi:type="int" name="sort_order" nullable="false" default="0" comment="Sort order"/>
+        <column xsi:type="timestamp" name="created_at" nullable="false" default="CURRENT_TIMESTAMP" comment="Created at"/>
+        <column xsi:type="timestamp" name="updated_at" nullable="false" default="CURRENT_TIMESTAMP" on_update="true" comment="Updated at"/>
+        <constraint xsi:type="primary" referenceId="PRIMARY">
+            <column name="author_id"/>
+        </constraint>
+        <constraint xsi:type="unique" referenceId="PANTH_BLOG_AUTHOR_URL_KEY">
+            <column name="url_key"/>
+        </constraint>
+        <index referenceId="PANTH_BLOG_AUTHOR_IS_ACTIVE" indexType="btree">
+            <column name="is_active"/>
+        </index>
+    </table>
+
+    <!-- Post <-> Category link table -->
+    <table name="panth_blog_post_category" resource="default" engine="innodb" comment="Post-Category many-to-many">
+        <column xsi:type="int" name="post_id" unsigned="true" nullable="false" comment="Post ID"/>
+        <column xsi:type="int" name="category_id" unsigned="true" nullable="false" comment="Category ID"/>
+        <column xsi:type="int" name="position" nullable="false" default="0" comment="Position"/>
+        <column xsi:type="smallint" name="is_primary" unsigned="true" nullable="false" default="0" comment="Primary category flag"/>
+        <constraint xsi:type="primary" referenceId="PRIMARY">
+            <column name="post_id"/>
+            <column name="category_id"/>
+        </constraint>
+        <constraint xsi:type="foreign" referenceId="PANTH_BLOG_POST_CATEGORY_POST_ID_PANTH_BLOG_POST_POST_ID"
+                    table="panth_blog_post_category" column="post_id"
+                    referenceTable="panth_blog_post" referenceColumn="post_id" onDelete="CASCADE"/>
+        <constraint xsi:type="foreign" referenceId="PANTH_BLOG_POST_CATEGORY_CATEGORY_ID_PANTH_BLOG_CATEGORY_CATEGORY_ID"
+                    table="panth_blog_post_category" column="category_id"
+                    referenceTable="panth_blog_category" referenceColumn="category_id" onDelete="CASCADE"/>
+        <index referenceId="PANTH_BLOG_POST_CATEGORY_CATEGORY_ID" indexType="btree">
+            <column name="category_id"/>
+        </index>
+    </table>
+
+    <!-- Post <-> Tag link table -->
+    <table name="panth_blog_post_tag" resource="default" engine="innodb" comment="Post-Tag many-to-many">
+        <column xsi:type="int" name="post_id" unsigned="true" nullable="false" comment="Post ID"/>
+        <column xsi:type="int" name="tag_id" unsigned="true" nullable="false" comment="Tag ID"/>
+        <constraint xsi:type="primary" referenceId="PRIMARY">
+            <column name="post_id"/>
+            <column name="tag_id"/>
+        </constraint>
+        <constraint xsi:type="foreign" referenceId="PANTH_BLOG_POST_TAG_POST_ID_PANTH_BLOG_POST_POST_ID"
+                    table="panth_blog_post_tag" column="post_id"
+                    referenceTable="panth_blog_post" referenceColumn="post_id" onDelete="CASCADE"/>
+        <constraint xsi:type="foreign" referenceId="PANTH_BLOG_POST_TAG_TAG_ID_PANTH_BLOG_TAG_TAG_ID"
+                    table="panth_blog_post_tag" column="tag_id"
+                    referenceTable="panth_blog_tag" referenceColumn="tag_id" onDelete="CASCADE"/>
+        <index referenceId="PANTH_BLOG_POST_TAG_TAG_ID" indexType="btree">
+            <column name="tag_id"/>
+        </index>
+    </table>
+
+    <!-- Post <-> Store visibility -->
+    <table name="panth_blog_post_store" resource="default" engine="innodb" comment="Post-Store visibility">
+        <column xsi:type="int" name="post_id" unsigned="true" nullable="false" comment="Post ID"/>
+        <column xsi:type="smallint" name="store_id" unsigned="true" nullable="false" comment="Store ID"/>
+        <constraint xsi:type="primary" referenceId="PRIMARY">
+            <column name="post_id"/>
+            <column name="store_id"/>
+        </constraint>
+        <constraint xsi:type="foreign" referenceId="PANTH_BLOG_POST_STORE_POST_ID_PANTH_BLOG_POST_POST_ID"
+                    table="panth_blog_post_store" column="post_id"
+                    referenceTable="panth_blog_post" referenceColumn="post_id" onDelete="CASCADE"/>
+        <constraint xsi:type="foreign" referenceId="PANTH_BLOG_POST_STORE_STORE_ID_STORE_STORE_ID"
+                    table="panth_blog_post_store" column="store_id"
+                    referenceTable="store" referenceColumn="store_id" onDelete="CASCADE"/>
+        <index referenceId="PANTH_BLOG_POST_STORE_STORE_ID" indexType="btree">
+            <column name="store_id"/>
+        </index>
+    </table>
+
+    <!-- Category <-> Store visibility -->
+    <table name="panth_blog_category_store" resource="default" engine="innodb" comment="Category-Store visibility">
+        <column xsi:type="int" name="category_id" unsigned="true" nullable="false" comment="Category ID"/>
+        <column xsi:type="smallint" name="store_id" unsigned="true" nullable="false" comment="Store ID"/>
+        <constraint xsi:type="primary" referenceId="PRIMARY">
+            <column name="category_id"/>
+            <column name="store_id"/>
+        </constraint>
+        <constraint xsi:type="foreign" referenceId="PANTH_BLOG_CATEGORY_STORE_CATEGORY_ID_PANTH_BLOG_CATEGORY_CATEGORY_ID"
+                    table="panth_blog_category_store" column="category_id"
+                    referenceTable="panth_blog_category" referenceColumn="category_id" onDelete="CASCADE"/>
+        <constraint xsi:type="foreign" referenceId="PANTH_BLOG_CATEGORY_STORE_STORE_ID_STORE_STORE_ID"
+                    table="panth_blog_category_store" column="store_id"
+                    referenceTable="store" referenceColumn="store_id" onDelete="CASCADE"/>
+        <index referenceId="PANTH_BLOG_CATEGORY_STORE_STORE_ID" indexType="btree">
+            <column name="store_id"/>
+        </index>
+    </table>
+
+    <!-- Related posts -->
+    <table name="panth_blog_post_related" resource="default" engine="innodb" comment="Manual related posts">
+        <column xsi:type="int" name="post_id" unsigned="true" nullable="false" comment="Post ID"/>
+        <column xsi:type="int" name="related_post_id" unsigned="true" nullable="false" comment="Related Post ID"/>
+        <column xsi:type="int" name="sort_order" nullable="false" default="0" comment="Sort order"/>
+        <constraint xsi:type="primary" referenceId="PRIMARY">
+            <column name="post_id"/>
+            <column name="related_post_id"/>
+        </constraint>
+        <constraint xsi:type="foreign" referenceId="PANTH_BLOG_POST_RELATED_POST_ID_PANTH_BLOG_POST_POST_ID"
+                    table="panth_blog_post_related" column="post_id"
+                    referenceTable="panth_blog_post" referenceColumn="post_id" onDelete="CASCADE"/>
+        <constraint xsi:type="foreign" referenceId="PANTH_BLOG_POST_RELATED_RELATED_POST_ID_PANTH_BLOG_POST_POST_ID"
+                    table="panth_blog_post_related" column="related_post_id"
+                    referenceTable="panth_blog_post" referenceColumn="post_id" onDelete="CASCADE"/>
+        <index referenceId="PANTH_BLOG_POST_RELATED_RELATED_POST_ID" indexType="btree">
+            <column name="related_post_id"/>
+        </index>
+    </table>
+
+    <!-- Comments -->
+    <table name="panth_blog_comment" resource="default" engine="innodb" comment="Panth Blog Comments">
+        <column xsi:type="int" name="comment_id" unsigned="true" nullable="false" identity="true" comment="Comment ID"/>
+        <column xsi:type="int" name="post_id" unsigned="true" nullable="false" comment="Post ID"/>
+        <column xsi:type="int" name="parent_id" unsigned="true" nullable="true" comment="Parent comment ID"/>
+        <column xsi:type="varchar" name="author_name" nullable="false" length="120" comment="Author name"/>
+        <column xsi:type="varchar" name="author_email" nullable="true" length="255" comment="Author email"/>
+        <column xsi:type="varchar" name="author_website" nullable="true" length="500" comment="Author website"/>
+        <column xsi:type="text" name="content" nullable="false" comment="Sanitised HTML"/>
+        <column xsi:type="varchar" name="status" nullable="false" length="16" default="pending" comment="pending|approved|spam|trash"/>
+        <column xsi:type="varchar" name="ip" nullable="true" length="45" comment="Client IP address"/>
+        <column xsi:type="varchar" name="user_agent" nullable="true" length="255" comment="User agent"/>
+        <column xsi:type="timestamp" name="created_at" nullable="false" default="CURRENT_TIMESTAMP" comment="Created at"/>
+        <column xsi:type="timestamp" name="approved_at" nullable="true" comment="Approved at"/>
+        <column xsi:type="int" name="votes_up" unsigned="true" nullable="false" default="0" comment="Votes up"/>
+        <column xsi:type="int" name="votes_down" unsigned="true" nullable="false" default="0" comment="Votes down"/>
+        <constraint xsi:type="primary" referenceId="PRIMARY">
+            <column name="comment_id"/>
+        </constraint>
+        <constraint xsi:type="foreign" referenceId="PANTH_BLOG_COMMENT_POST_ID_PANTH_BLOG_POST_POST_ID"
+                    table="panth_blog_comment" column="post_id"
+                    referenceTable="panth_blog_post" referenceColumn="post_id" onDelete="CASCADE"/>
+        <index referenceId="PANTH_BLOG_COMMENT_STATUS" indexType="btree">
+            <column name="status"/>
+        </index>
+        <index referenceId="PANTH_BLOG_COMMENT_PARENT_ID" indexType="btree">
+            <column name="parent_id"/>
+        </index>
+    </table>
+
+    <!-- URL history for 404 -> 301 redirect -->
+    <table name="panth_blog_url_history" resource="default" engine="innodb" comment="URL history for slug change redirects">
+        <column xsi:type="int" name="id" unsigned="true" nullable="false" identity="true" comment="ID"/>
+        <column xsi:type="varchar" name="entity_type" nullable="false" length="16" comment="post|category|tag|author"/>
+        <column xsi:type="int" name="entity_id" unsigned="true" nullable="false" comment="Entity ID"/>
+        <column xsi:type="varchar" name="old_url_key" nullable="false" length="160" comment="Old URL key"/>
+        <column xsi:type="varchar" name="new_url_key" nullable="false" length="160" comment="New URL key"/>
+        <column xsi:type="timestamp" name="redirected_at" nullable="false" default="CURRENT_TIMESTAMP" comment="Created at"/>
+        <constraint xsi:type="primary" referenceId="PRIMARY">
+            <column name="id"/>
+        </constraint>
+        <index referenceId="PANTH_BLOG_URL_HISTORY_OLD_URL_KEY" indexType="btree">
+            <column name="old_url_key"/>
+            <column name="entity_type"/>
+        </index>
+        <index referenceId="PANTH_BLOG_URL_HISTORY_ENTITY" indexType="btree">
+            <column name="entity_type"/>
+            <column name="entity_id"/>
+        </index>
+    </table>
+
+    <!-- IndexNow queue -->
+    <table name="panth_blog_indexnow_queue" resource="default" engine="innodb" comment="IndexNow URL queue">
+        <column xsi:type="int" name="id" unsigned="true" nullable="false" identity="true" comment="ID"/>
+        <column xsi:type="varchar" name="url" nullable="false" length="500" comment="URL"/>
+        <column xsi:type="smallint" name="store_id" unsigned="true" nullable="false" default="0" comment="Store ID"/>
+        <column xsi:type="varchar" name="status" nullable="false" length="16" default="pending" comment="pending|sent|failed"/>
+        <column xsi:type="timestamp" name="queued_at" nullable="false" default="CURRENT_TIMESTAMP" comment="Queued at"/>
+        <column xsi:type="timestamp" name="sent_at" nullable="true" comment="Sent at"/>
+        <constraint xsi:type="primary" referenceId="PRIMARY">
+            <column name="id"/>
+        </constraint>
+        <index referenceId="PANTH_BLOG_INDEXNOW_QUEUE_STATUS" indexType="btree">
+            <column name="status"/>
+        </index>
+    </table>
+
+</schema>

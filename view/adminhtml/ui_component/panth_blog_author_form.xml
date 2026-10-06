@@ -1,0 +1,204 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<form xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Ui:etc/ui_configuration.xsd">
+    <argument name="data" xsi:type="array">
+        <item name="js_config" xsi:type="array">
+            <item name="provider" xsi:type="string">panth_blog_author_form.panth_blog_author_form_data_source</item>
+        </item>
+        <item name="label" xsi:type="string" translate="true">Author Information</item>
+        <item name="template" xsi:type="string">templates/form/collapsible</item>
+    </argument>
+    <settings>
+        <buttons>
+            <button name="back" class="Panth\Blog\Block\Adminhtml\Author\Edit\Button\Back"/>
+            <button name="save" class="Panth\Blog\Block\Adminhtml\Author\Edit\Button\Save"/>
+            <button name="save_and_continue" class="Panth\Blog\Block\Adminhtml\Author\Edit\Button\SaveAndContinue"/>
+            <button name="reset" class="Panth\Blog\Block\Adminhtml\Author\Edit\Button\Reset"/>
+            <button name="delete" class="Panth\Blog\Block\Adminhtml\Author\Edit\Button\Delete"/>
+        </buttons>
+        <namespace>panth_blog_author_form</namespace>
+        <dataScope>data</dataScope>
+        <deps>
+            <dep>panth_blog_author_form.panth_blog_author_form_data_source</dep>
+        </deps>
+    </settings>
+    <dataSource name="panth_blog_author_form_data_source">
+        <argument name="data" xsi:type="array">
+            <item name="js_config" xsi:type="array">
+                <item name="component" xsi:type="string">Magento_Ui/js/form/provider</item>
+            </item>
+        </argument>
+        <settings>
+            <submitUrl path="*/*/save"/>
+        </settings>
+        <dataProvider class="Panth\Blog\Model\Author\DataProvider" name="panth_blog_author_form_data_source">
+            <settings>
+                <requestFieldName>id</requestFieldName>
+                <primaryFieldName>author_id</primaryFieldName>
+            </settings>
+        </dataProvider>
+    </dataSource>
+    <fieldset name="general">
+        <settings>
+            <label translate="true">General</label>
+        </settings>
+        <field name="author_id" formElement="input">
+            <settings>
+                <dataType>text</dataType>
+                <visible>false</visible>
+                <dataScope>author_id</dataScope>
+            </settings>
+        </field>
+        <field name="display_name" formElement="input">
+            <settings>
+                <label translate="true">Display Name</label>
+                <dataType>text</dataType>
+                <dataScope>display_name</dataScope>
+                <validation>
+                    <rule name="required-entry" xsi:type="boolean">true</rule>
+                </validation>
+            </settings>
+        </field>
+        <field name="url_key" formElement="input">
+            <settings>
+                <label translate="true">URL Key</label>
+                <dataType>text</dataType>
+                <dataScope>url_key</dataScope>
+            </settings>
+        </field>
+        <field name="role" formElement="input">
+            <settings>
+                <label translate="true">Role / Job Title</label>
+                <dataType>text</dataType>
+                <dataScope>role</dataScope>
+            </settings>
+        </field>
+        <field name="email" formElement="input">
+            <settings>
+                <label translate="true">Public Email</label>
+                <dataType>text</dataType>
+                <dataScope>email</dataScope>
+            </settings>
+        </field>
+        <field name="avatar" formElement="imageUploader">
+            <settings>
+                <label translate="true">Avatar</label>
+                <dataType>text</dataType>
+                <dataScope>avatar</dataScope>
+            </settings>
+            <formElements>
+                <imageUploader>
+                    <settings>
+                        <required>false</required>
+                        <uploaderConfig>
+                            <param xsi:type="url" name="url" path="panth_blog/image/upload"/>
+                        </uploaderConfig>
+                        <previewTmpl>Magento_Catalog/image-preview</previewTmpl>
+                        <allowedExtensions>jpg jpeg gif png webp</allowedExtensions>
+                        <maxFileSize>4194304</maxFileSize>
+                    </settings>
+                </imageUploader>
+            </formElements>
+        </field>
+        <field name="is_active" formElement="checkbox">
+            <settings>
+                <label translate="true">Active</label>
+                <dataType>boolean</dataType>
+                <dataScope>is_active</dataScope>
+            </settings>
+            <formElements>
+                <checkbox>
+                    <settings>
+                        <valueMap>
+                            <map name="false" xsi:type="number">0</map>
+                            <map name="true" xsi:type="number">1</map>
+                        </valueMap>
+                        <prefer>toggle</prefer>
+                    </settings>
+                </checkbox>
+            </formElements>
+        </field>
+        <field name="sort_order" formElement="input">
+            <settings>
+                <label translate="true">Sort Order</label>
+                <dataType>number</dataType>
+                <dataScope>sort_order</dataScope>
+            </settings>
+        </field>
+    </fieldset>
+    <fieldset name="bio">
+        <settings>
+            <label translate="true">Biography</label>
+            <collapsible>true</collapsible>
+        </settings>
+        <field name="short_bio" formElement="textarea">
+            <settings>
+                <label translate="true">Short Bio</label>
+                <dataType>text</dataType>
+                <dataScope>short_bio</dataScope>
+            </settings>
+        </field>
+        <field name="long_bio" formElement="wysiwyg">
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="wysiwygConfigData" xsi:type="array">
+                        <item name="height" xsi:type="string">200px</item>
+                        <item name="is_pagebuilder_enabled" xsi:type="boolean">false</item>
+                        <item name="add_variables" xsi:type="boolean">false</item>
+                        <item name="add_widgets" xsi:type="boolean">false</item>
+                        <item name="add_images" xsi:type="boolean">true</item>
+                        <item name="add_directives" xsi:type="boolean">false</item>
+                    </item>
+                </item>
+            </argument>
+            <settings>
+                <label translate="true">Long Bio</label>
+                <dataType>text</dataType>
+                <dataScope>long_bio</dataScope>
+            </settings>
+            <formElements>
+                <wysiwyg>
+                    <settings>
+                        <wysiwyg>true</wysiwyg>
+                    </settings>
+                </wysiwyg>
+            </formElements>
+        </field>
+    </fieldset>
+    <fieldset name="schema">
+        <settings>
+            <label translate="true">Schema (Person)</label>
+            <collapsible>true</collapsible>
+        </settings>
+        <field name="links" formElement="textarea">
+            <settings>
+                <label translate="true">Social Links (JSON)</label>
+                <dataType>text</dataType>
+                <dataScope>links</dataScope>
+                <notice translate="true">JSON array of objects with name + url keys.</notice>
+            </settings>
+        </field>
+        <field name="knows_about" formElement="textarea">
+            <settings>
+                <label translate="true">Knows About (JSON)</label>
+                <dataType>text</dataType>
+                <dataScope>knows_about</dataScope>
+                <notice translate="true">JSON array of topic strings.</notice>
+            </settings>
+        </field>
+        <field name="alumni_of" formElement="input">
+            <settings>
+                <label translate="true">Alumni Of</label>
+                <dataType>text</dataType>
+                <dataScope>alumni_of</dataScope>
+            </settings>
+        </field>
+        <field name="same_as" formElement="textarea">
+            <settings>
+                <label translate="true">Same As / Profile URLs (JSON)</label>
+                <dataType>text</dataType>
+                <dataScope>same_as</dataScope>
+                <notice translate="true">JSON array of profile URLs.</notice>
+            </settings>
+        </field>
+    </fieldset>
+</form>

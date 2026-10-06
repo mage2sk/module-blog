@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+    <type name="Magento\Framework\App\RouterList">
+        <arguments>
+            <argument name="routerList" xsi:type="array">
+                <item name="panth_blog_router" xsi:type="array">
+                    <item name="class" xsi:type="string">Panth\Blog\Controller\Router\BlogRouter</item>
+                    <item name="disable" xsi:type="boolean">false</item>
+                    <item name="sortOrder" xsi:type="string">25</item>
+                </item>
+            </argument>
+        </arguments>
+    </type>
+    <type name="Panth\SocialMeta\Model\Social\OpenGraphResolver">
+        <plugin name="panth_blog_og_image_for_blog_post"
+                type="Panth\Blog\Plugin\Social\OgImageForBlogPostPlugin"
+                sortOrder="10"/>
+    </type>
+</config>

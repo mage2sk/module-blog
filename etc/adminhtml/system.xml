@@ -1,0 +1,307 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_file.xsd">
+    <system>
+        <tab id="panth" translate="label" sortOrder="450">
+            <label>Panth</label>
+        </tab>
+        <section id="panth_blog" translate="label" sortOrder="60" showInDefault="1" showInWebsite="1" showInStore="1">
+            <class>separator-top</class>
+            <label>Blog</label>
+            <tab>panth</tab>
+            <resource>Panth_Blog::config</resource>
+
+            <group id="general" translate="label" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>General</label>
+                <field id="enabled" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Enabled</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+                <field id="route_frontname" type="text" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Route Front Name</label>
+                    <comment>Changing this requires URL rewrite rebuild.</comment>
+                </field>
+                <field id="index_title" type="text" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Blog Index Title</label>
+                </field>
+                <field id="index_description" type="textarea" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Blog Index Meta Description</label>
+                </field>
+                <field id="index_hero_text" type="textarea" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Blog Hero Text</label>
+                </field>
+                <field id="posts_per_page" type="text" sortOrder="60" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Posts Per Page</label>
+                    <validate>validate-digits validate-greater-than-zero</validate>
+                </field>
+                <field id="reading_speed_wpm" type="text" sortOrder="70" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Reading Speed (words/min)</label>
+                    <validate>validate-digits validate-greater-than-zero</validate>
+                </field>
+                <field id="show_reading_time" type="select" sortOrder="80" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Show Reading Time</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+                <field id="show_author_bio" type="select" sortOrder="90" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Show Author Bio at Post Foot</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+                <field id="show_share_buttons" type="select" sortOrder="100" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Show Share Buttons</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+            </group>
+
+            <group id="display" translate="label" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>Display</label>
+                <field id="show_badges" type="select" sortOrder="70" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Show Post-card Badges</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+                <field id="show_featured_badge" type="select" sortOrder="80" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Show "Featured" Badge</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <depends><field id="show_badges">1</field></depends>
+                </field>
+                <field id="new_badge_days" type="text" sortOrder="90" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>"New" Badge Window (days)</label>
+                    <validate>validate-digits validate-zero-or-greater</validate>
+                    <comment>Posts published within this many days show a New badge. 0 disables it.</comment>
+                    <depends><field id="show_badges">1</field></depends>
+                </field>
+                <field id="show_toc" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Show Table of Contents</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+                <field id="related_posts_count" type="text" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Related Posts Count</label>
+                    <validate>validate-digits</validate>
+                </field>
+                <field id="category_template" type="select" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Default Category Template</label>
+                    <source_model>Panth\Blog\Model\Config\Source\CategoryTemplate</source_model>
+                </field>
+                <field id="sidebar_show_categories" type="select" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Sidebar: Categories</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+                <field id="sidebar_show_tag_cloud" type="select" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Sidebar: Tag Cloud</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+                <field id="sidebar_show_search" type="select" sortOrder="60" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Sidebar: Search</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+            </group>
+
+            <group id="feeds" translate="label" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>RSS / Atom Feeds</label>
+                <field id="enabled" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Enable Feeds</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+                <field id="posts_per_feed" type="text" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Posts Per Feed</label>
+                    <validate>validate-digits validate-greater-than-zero</validate>
+                </field>
+                <field id="include_full_content" type="select" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Include Full Content</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+                <field id="per_category_feeds" type="select" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Per-Category Feeds</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+                <field id="per_tag_feeds" type="select" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Per-Tag Feeds</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+                <field id="per_author_feeds" type="select" sortOrder="60" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Per-Author Feeds</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+                <field id="cache_ttl_seconds" type="text" sortOrder="70" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Cache TTL (seconds)</label>
+                    <validate>validate-digits validate-greater-than-zero</validate>
+                </field>
+            </group>
+
+            <group id="seo" translate="label" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>SEO</label>
+                <field id="og_use_featured_image" type="select" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Use Post Featured Image as OG/Twitter Image</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment>Requires an Open Graph provider module. Falls back gracefully when none is installed.</comment>
+                </field>
+                <field id="title_template" type="text" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Title Template</label>
+                    <comment><![CDATA[Tokens: {{post.title}}, {{post.meta_title}}, {{post.category}}, {{post.author}}]]></comment>
+                </field>
+                <field id="default_meta_description" type="textarea" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Fallback Meta Description</label>
+                </field>
+                <field id="tag_thin_content_threshold" type="text" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Tag Thin-Content Threshold</label>
+                    <validate>validate-digits</validate>
+                </field>
+            </group>
+
+            <group id="aeo" translate="label" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>AEO (Answer Engine Optimisation)</label>
+                <field id="auto_extract_tldr" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Auto-extract TL;DR</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+                <field id="howto_auto_detect" type="select" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>HowTo Auto-detect</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+            </group>
+
+            <group id="aio" translate="label" sortOrder="60" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>AIO (AI Indexing)</label>
+                <field id="llms_txt_include" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Include in llms.txt</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+                <field id="llms_txt_max_posts" type="text" sortOrder="15" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Max Posts in llms.txt Blog Section</label>
+                    <validate>validate-digits validate-zero-or-greater</validate>
+                    <comment>Cap the number of blog posts listed in /llms.txt and /llms.json. 0 falls back to 50.</comment>
+                </field>
+                <field id="llms_full_txt_include" type="select" sortOrder="18" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Include in llms-full.txt</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+                <field id="markdown_export_enabled" type="select" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Enable Markdown Export Endpoint</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+            </group>
+
+            <group id="indexnow" translate="label" sortOrder="70" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>IndexNow</label>
+                <field id="enabled" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Enable IndexNow Notifications</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+                <field id="notify_on_publish" type="select" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Notify on Publish</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+                <field id="notify_on_update" type="select" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Notify on Update</label>
+                    <comment>Re-queue a published post on every save (metadata/content edits).</comment>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+                <field id="notify_on_delete" type="select" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Notify on Delete</label>
+                    <comment>Ping IndexNow with the post URL on delete to speed up de-indexing.</comment>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+                <field id="batch_size" type="text" sortOrder="50" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Batch Size</label>
+                    <comment>Maximum URLs drained per cron run (default 100).</comment>
+                    <validate>validate-digits validate-greater-than-zero</validate>
+                </field>
+                <field id="api_key" type="text" sortOrder="60" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>API Key</label>
+                    <comment>8-128 letters, digits or dashes. Empty sends nothing. Serve {key}.txt at root.</comment>
+                    <validate>validate-length minimum-length-8 maximum-length-128</validate>
+                    <depends><field id="enabled">1</field></depends>
+                </field>
+            </group>
+
+            <group id="comments" translate="label" sortOrder="80" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>Comments</label>
+                <field id="enabled" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Enable Comments</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+                <field id="allow_for" type="select" sortOrder="15" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Who Can Comment</label>
+                    <source_model>Panth\Blog\Model\Config\Source\CommentAllowFor</source_model>
+                    <depends><field id="enabled">1</field></depends>
+                </field>
+                <field id="auto_approve_registered" type="select" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Auto-approve Registered Customers</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <depends><field id="enabled">1</field></depends>
+                </field>
+                <field id="max_per_hour_per_ip" type="text" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Max Submissions per Hour per IP</label>
+                    <validate>validate-number</validate>
+                    <comment>Comments accepted per IP address per hour. 0 disables the limit.</comment>
+                    <depends><field id="enabled">1</field></depends>
+                </field>
+                <field id="enable_threading" type="select" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Allow Threaded Replies</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <depends><field id="enabled">1</field></depends>
+                </field>
+                <field id="captcha_enabled" type="select" sortOrder="45" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Require CAPTCHA</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment>When Yes, comment submissions must pass the selected CAPTCHA. Default No keeps the previous behaviour (no CAPTCHA on the comment form).</comment>
+                    <depends><field id="enabled">1</field></depends>
+                </field>
+                <field id="captcha_provider" type="select" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>CAPTCHA Provider</label>
+                    <source_model>Panth\Blog\Model\Config\Source\CommentCaptchaProvider</source_model>
+                    <comment>Math Question needs no keys. Cloudflare Turnstile, hCaptcha and reCAPTCHA v3 need the site key and secret key below; while either key is empty the Math Question is used instead.</comment>
+                    <depends>
+                        <field id="enabled">1</field>
+                        <field id="captcha_enabled">1</field>
+                    </depends>
+                </field>
+                <field id="captcha_site_key" type="text" sortOrder="52" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>CAPTCHA Site Key</label>
+                    <depends>
+                        <field id="enabled">1</field>
+                        <field id="captcha_enabled">1</field>
+                        <field id="captcha_provider" separator=",">cloudflare_turnstile,hcaptcha,recaptcha_v3</field>
+                    </depends>
+                </field>
+                <field id="captcha_secret_key" type="obscure" sortOrder="54" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>CAPTCHA Secret Key</label>
+                    <backend_model>Magento\Config\Model\Config\Backend\Encrypted</backend_model>
+                    <depends>
+                        <field id="enabled">1</field>
+                        <field id="captcha_enabled">1</field>
+                        <field id="captcha_provider" separator=",">cloudflare_turnstile,hcaptcha,recaptcha_v3</field>
+                    </depends>
+                </field>
+                <field id="nofollow_external_links" type="select" sortOrder="60" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Add rel="nofollow" to External Links</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <depends><field id="enabled">1</field></depends>
+                </field>
+                <field id="notify_admin_enabled" type="select" sortOrder="70" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Email Admin on New Comment</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <depends><field id="enabled">1</field></depends>
+                </field>
+                <field id="notify_recipient_email" type="text" sortOrder="80" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Notification Recipient Email</label>
+                    <validate>validate-email</validate>
+                    <comment>Where new comment alerts are sent. Leave blank to use the store General Contact email.</comment>
+                    <depends>
+                        <field id="enabled">1</field>
+                        <field id="notify_admin_enabled">1</field>
+                    </depends>
+                </field>
+                <field id="notify_sender_identity" type="select" sortOrder="90" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Notification Sender (Email Identity)</label>
+                    <source_model>Magento\Config\Model\Config\Source\Email\Identity</source_model>
+                    <comment>Store email identity used as the From address. Defaults to General Contact.</comment>
+                    <depends>
+                        <field id="enabled">1</field>
+                        <field id="notify_admin_enabled">1</field>
+                    </depends>
+                </field>
+            </group>
+
+        </section>
+    </system>
+</config>

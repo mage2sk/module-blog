@@ -1,0 +1,27 @@
+<?php
+declare(strict_types=1);
+/** @var \Magento\Framework\View\Element\Template $block */
+/** @var \Magento\Framework\Escaper $escaper */
+$comments = (array)$block->getData('comments');
+$postSlug = (string)$block->getData('post_slug');
+$count = count($comments);
+?>
+<section class="pb-comments" id="comments">
+    <h2 class="pb-comments__title"><?= $escaper->escapeHtml(__('Comments')) ?>
+        <?php if ($count > 0): ?><span class="pb-comments__count">(<?= (int)$count ?>)</span><?php endif; ?>
+    </h2>
+    <?php if ($count > 0): ?>
+        <ul class="pb-comments__list">
+            <?php foreach ($comments as $c): ?>
+                <?= $block->getLayout()->createBlock(\Magento\Framework\View\Element\Template::class)
+                    ->setTemplate('Panth_Blog::comment/item.phtml')
+                    ->setData('comment', $c)->toHtml() ?>
+            <?php endforeach; ?>
+        </ul>
+    <?php else: ?>
+        <p class="pb-comments__empty"><?= $escaper->escapeHtml(__('Be the first to comment.')) ?></p>
+    <?php endif; ?>
+    <?= $block->getLayout()->createBlock(\Magento\Framework\View\Element\Template::class)
+        ->setTemplate('Panth_Blog::comment/form.phtml')
+        ->setData('post_slug', $postSlug)->toHtml() ?>
+</section>

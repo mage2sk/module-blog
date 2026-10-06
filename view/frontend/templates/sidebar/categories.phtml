@@ -1,0 +1,40 @@
+<?php
+declare(strict_types=1);
+/**
+ * @var \Magento\Framework\View\Element\Template $block
+ * @var \Magento\Framework\Escaper $escaper
+ * @var \Panth\Blog\ViewModel\Sidebar $viewModel
+ */
+$viewModel = $block->getData('view_model');
+$cats = ($viewModel && method_exists($viewModel, 'getCategoryTree')) ? ($viewModel->getCategoryTree() ?? []) : [];
+if (empty($cats)) {
+    return;
+}
+?>
+<section class="pb-sidebar__widget pb-widget pb-widget--categories pb-sidebar__widget--categories">
+    <h3 class="pb-sidebar__widget-title pb-widget__title">
+        <?= $escaper->escapeHtml(__('Categories')) ?>
+    </h3>
+    <ul class="pb-widget__cat-list">
+        <?php foreach ($cats as $cat): ?>
+            <?php
+            $name = (string)($cat['name'] ?? '');
+            $url = (string)($cat['url'] ?? '#');
+            $level = (int)($cat['level'] ?? 1);
+            $count = (int)($cat['post_count'] ?? 0);
+            if ($name === '') {
+                continue;
+            }
+            $padPx = $level > 1 ? (int)(($level - 1) * 16) : 0;
+            ?>
+            <li class="pb-widget__cat-item pb-sidebar__category-item pb-sidebar__category-item--level-<?= (int)$level ?>"<?php if ($padPx > 0): ?> style="padding-left: <?= (int)$padPx ?>px;"<?php endif; ?>>
+                <a href="<?= $escaper->escapeUrl($url) ?>">
+                    <span><?= $escaper->escapeHtml($name) ?></span>
+                    <?php if ($count > 0): ?>
+                        <span class="pb-sidebar__count">(<?= (int)$count ?>)</span>
+                    <?php endif; ?>
+                </a>
+            </li>
+        <?php endforeach; ?>
+    </ul>
+</section>

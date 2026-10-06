@@ -1,0 +1,245 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<form xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Ui:etc/ui_configuration.xsd">
+    <argument name="data" xsi:type="array">
+        <item name="js_config" xsi:type="array">
+            <item name="provider" xsi:type="string">panth_blog_category_form.panth_blog_category_form_data_source</item>
+        </item>
+        <item name="label" xsi:type="string" translate="true">Category Information</item>
+        <item name="template" xsi:type="string">templates/form/collapsible</item>
+    </argument>
+    <settings>
+        <buttons>
+            <button name="back" class="Panth\Blog\Block\Adminhtml\Category\Edit\Button\Back"/>
+            <button name="save" class="Panth\Blog\Block\Adminhtml\Category\Edit\Button\Save"/>
+            <button name="save_and_continue" class="Panth\Blog\Block\Adminhtml\Category\Edit\Button\SaveAndContinue"/>
+            <button name="reset" class="Panth\Blog\Block\Adminhtml\Category\Edit\Button\Reset"/>
+            <button name="delete" class="Panth\Blog\Block\Adminhtml\Category\Edit\Button\Delete"/>
+        </buttons>
+        <namespace>panth_blog_category_form</namespace>
+        <dataScope>data</dataScope>
+        <deps>
+            <dep>panth_blog_category_form.panth_blog_category_form_data_source</dep>
+        </deps>
+    </settings>
+    <dataSource name="panth_blog_category_form_data_source">
+        <argument name="data" xsi:type="array">
+            <item name="js_config" xsi:type="array">
+                <item name="component" xsi:type="string">Magento_Ui/js/form/provider</item>
+            </item>
+        </argument>
+        <settings>
+            <submitUrl path="*/*/save"/>
+        </settings>
+        <dataProvider class="Panth\Blog\Model\Category\DataProvider" name="panth_blog_category_form_data_source">
+            <settings>
+                <requestFieldName>id</requestFieldName>
+                <primaryFieldName>category_id</primaryFieldName>
+            </settings>
+        </dataProvider>
+    </dataSource>
+    <fieldset name="general">
+        <settings>
+            <label translate="true">General</label>
+        </settings>
+        <field name="category_id" formElement="input">
+            <settings>
+                <dataType>text</dataType>
+                <visible>false</visible>
+                <dataScope>category_id</dataScope>
+            </settings>
+        </field>
+        <field name="name" formElement="input">
+            <settings>
+                <label translate="true">Name</label>
+                <dataType>text</dataType>
+                <dataScope>name</dataScope>
+                <validation>
+                    <rule name="required-entry" xsi:type="boolean">true</rule>
+                </validation>
+            </settings>
+        </field>
+        <field name="url_key" formElement="input">
+            <settings>
+                <label translate="true">URL Key</label>
+                <dataType>text</dataType>
+                <dataScope>url_key</dataScope>
+            </settings>
+        </field>
+        <field name="parent_id" formElement="select">
+            <settings>
+                <label translate="true">Parent Category</label>
+                <dataType>text</dataType>
+                <dataScope>parent_id</dataScope>
+            </settings>
+            <formElements>
+                <select>
+                    <settings>
+                        <options class="Panth\Blog\Model\Config\Source\Categories"/>
+                        <caption translate="true">-- None (top level) --</caption>
+                    </settings>
+                </select>
+            </formElements>
+        </field>
+        <field name="description" formElement="wysiwyg">
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="wysiwygConfigData" xsi:type="array">
+                        <item name="height" xsi:type="string">200px</item>
+                        <item name="is_pagebuilder_enabled" xsi:type="boolean">false</item>
+                        <item name="add_variables" xsi:type="boolean">false</item>
+                        <item name="add_widgets" xsi:type="boolean">false</item>
+                        <item name="add_images" xsi:type="boolean">true</item>
+                        <item name="add_directives" xsi:type="boolean">false</item>
+                    </item>
+                </item>
+            </argument>
+            <settings>
+                <label translate="true">Description</label>
+                <dataType>text</dataType>
+                <dataScope>description</dataScope>
+            </settings>
+            <formElements>
+                <wysiwyg>
+                    <settings>
+                        <wysiwyg>true</wysiwyg>
+                    </settings>
+                </wysiwyg>
+            </formElements>
+        </field>
+        <field name="image" formElement="imageUploader">
+            <settings>
+                <label translate="true">Banner Image</label>
+                <dataType>text</dataType>
+                <dataScope>image</dataScope>
+            </settings>
+            <formElements>
+                <imageUploader>
+                    <settings>
+                        <required>false</required>
+                        <uploaderConfig>
+                            <param xsi:type="url" name="url" path="panth_blog/image/upload"/>
+                        </uploaderConfig>
+                        <previewTmpl>Magento_Catalog/image-preview</previewTmpl>
+                        <allowedExtensions>jpg jpeg gif png webp</allowedExtensions>
+                        <maxFileSize>4194304</maxFileSize>
+                    </settings>
+                </imageUploader>
+            </formElements>
+        </field>
+        <field name="is_active" formElement="checkbox">
+            <settings>
+                <label translate="true">Active</label>
+                <dataType>boolean</dataType>
+                <dataScope>is_active</dataScope>
+            </settings>
+            <formElements>
+                <checkbox>
+                    <settings>
+                        <valueMap>
+                            <map name="false" xsi:type="number">0</map>
+                            <map name="true" xsi:type="number">1</map>
+                        </valueMap>
+                        <prefer>toggle</prefer>
+                    </settings>
+                </checkbox>
+            </formElements>
+        </field>
+        <field name="links_submitted" formElement="hidden">
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="default" xsi:type="string">1</item>
+                </item>
+            </argument>
+            <settings>
+                <dataType>text</dataType>
+                <dataScope>links_submitted</dataScope>
+            </settings>
+        </field>
+        <field name="store_ids" formElement="multiselect">
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="default" xsi:type="array">
+                        <item name="0" xsi:type="string">0</item>
+                    </item>
+                </item>
+            </argument>
+            <settings>
+                <label translate="true">Store View</label>
+                <dataType>int</dataType>
+                <dataScope>store_ids</dataScope>
+                <validation>
+                    <rule name="required-entry" xsi:type="boolean">true</rule>
+                </validation>
+                <notice translate="true">All Store Views shows the category in every store.</notice>
+            </settings>
+            <formElements>
+                <multiselect>
+                    <settings>
+                        <options class="Magento\Cms\Ui\Component\Listing\Column\Cms\Options"/>
+                    </settings>
+                </multiselect>
+            </formElements>
+        </field>
+        <field name="sort_order" formElement="input">
+            <settings>
+                <label translate="true">Sort Order</label>
+                <dataType>number</dataType>
+                <dataScope>sort_order</dataScope>
+            </settings>
+        </field>
+    </fieldset>
+    <fieldset name="display">
+        <settings>
+            <label translate="true">Display</label>
+            <collapsible>true</collapsible>
+        </settings>
+        <field name="template" formElement="select">
+            <settings>
+                <label translate="true">Template</label>
+                <dataType>text</dataType>
+                <dataScope>template</dataScope>
+            </settings>
+            <formElements>
+                <select>
+                    <settings>
+                        <options class="Panth\Blog\Model\Config\Source\CategoryTemplate"/>
+                    </settings>
+                </select>
+            </formElements>
+        </field>
+        <field name="posts_per_page" formElement="input">
+            <settings>
+                <label translate="true">Posts Per Page</label>
+                <dataType>number</dataType>
+                <dataScope>posts_per_page</dataScope>
+            </settings>
+        </field>
+    </fieldset>
+    <fieldset name="seo">
+        <settings>
+            <label translate="true">SEO</label>
+            <collapsible>true</collapsible>
+        </settings>
+        <field name="meta_title" formElement="input">
+            <settings>
+                <label translate="true">Meta Title</label>
+                <dataType>text</dataType>
+                <dataScope>meta_title</dataScope>
+            </settings>
+        </field>
+        <field name="meta_description" formElement="textarea">
+            <settings>
+                <label translate="true">Meta Description</label>
+                <dataType>text</dataType>
+                <dataScope>meta_description</dataScope>
+            </settings>
+        </field>
+        <field name="meta_robots" formElement="input">
+            <settings>
+                <label translate="true">Meta Robots</label>
+                <dataType>text</dataType>
+                <dataScope>meta_robots</dataScope>
+            </settings>
+        </field>
+    </fieldset>
+</form>

@@ -1,0 +1,62 @@
+<?php
+declare(strict_types=1);
+/**
+ * @var \Magento\Framework\View\Element\Template $block
+ * @var \Magento\Framework\Escaper $escaper
+ * @var \Panth\Blog\ViewModel\PostView $vm
+ */
+$author = $block->getData('author');
+$vm = $block->getData('view_model');
+if (!$author || !$vm) {
+    return;
+}
+
+$avatar = (string)($author->getAvatar() ?? '');
+$links = [];
+if (method_exists($author, 'getLinksArray')) {
+    $links = (array)$author->getLinksArray();
+} elseif (method_exists($author, 'getLinks')) {
+    $rawLinks = $author->getLinks();
+    if (is_string($rawLinks) && $rawLinks !== '') {
+        $decoded = json_decode($rawLinks, true);
+        if (is_array($decoded)) {
+            $links = $decoded;
+        }
+    } elseif (is_array($rawLinks)) {
+        $links = $rawLinks;
+    }
+}
+?>
+<aside class="pb-author-card">
+    <?php if ($avatar !== ''): ?>
+        <img class="pb-author-card__avatar"
+             src="<?= $escaper->escapeUrl($vm->getMediaUrl($avatar)) ?>"
+             alt="<?= $escaper->escapeHtmlAttr((string)$author->getDisplayName()) ?>"/>
+    <?php endif; ?>
+    <div class="pb-author-card__body">
+        <h3 class="pb-author-card__name">
+            <a href="<?= $escaper->escapeUrl($vm->getAuthorUrl($author)) ?>">
+                <?= $escaper->escapeHtml((string)$author->getDisplayName()) ?>
+            </a>
+        </h3>
+        <?php if (method_exists($author, 'getRole') && $author->getRole()): ?>
+            <p class="pb-author-card__role"><?= $escaper->escapeHtml((string)$author->getRole()) ?></p>
+        <?php endif; ?>
+        <?php $bio = method_exists($author, 'getShortBio') ? (string)($author->getShortBio() ?? '') : ''; ?>
+        <?php if ($bio !== ''): ?>
+            <p class="pb-author-card__bio"><?= $escaper->escapeHtml($bio) ?></p>
+        <?php endif; ?>
+        <?php $linksFiltered = array_filter($links); ?>
+        <?php if (!empty($linksFiltered)): ?>
+            <div class="pb-author-card__links">
+                <?php foreach ($linksFiltered as $network => $url): ?>
+                    <a href="<?= $escaper->escapeUrl((string)$url) ?>"
+                       target="_blank"
+                       rel="noopener">
+                        <?= $escaper->escapeHtml(ucfirst((string)$network)) ?>
+                    </a>
+                <?php endforeach; ?>
+            </div>
+        <?php endif; ?>
+    </div>
+</aside>

@@ -1,0 +1,250 @@
+<?php
+declare(strict_types=1);
+/** @var \Magento\Framework\View\Element\Template $block */
+/** @var \Magento\Framework\Escaper $escaper */
+/** @var \Magento\Framework\View\Helper\SecureHtmlRenderer $secureRenderer */
+
+/** @var \Panth\Blog\ViewModel\CommentSection $vm */
+$vm = $block->getData('view_model');
+/** @var \Panth\Blog\ViewModel\PostView $postVm */
+$postVm = $block->getData('post_view_model');
+
+$post = $postVm ? $postVm->getPost() : null;
+if (!$vm || !$vm->isVisible($post)) {
+    return;
+}
+
+$comments = $vm->getApproved((int) $post->getPostId());
+$count = count($comments);
+$reason = $vm->getReason();
+$canPost = $vm->canPost();
+$canReply = $canPost && $vm->isThreadingEnabled();
+$renderNodes = function (array $nodes, int $depth) use (&$renderNodes, $escaper, $canReply): string {
+    $html = '';
+    foreach ($nodes as $node) {
+        $comment = $node['comment'];
+        $id = (int) $comment->getCommentId();
+        $name = (string) $comment->getAuthorName();
+        $createdAt = (string) $comment->getCreatedAt();
+        $html .= '<li class="pb-comment" id="comment-' . $id . '"><div class="pb-comment__body">'
+            . '<div class="pb-comment__header"><span class="pb-comment__author">'
+            . $escaper->escapeHtml($name) . '</span>';
+        if ($createdAt !== '') {
+            $html .= '<time class="pb-comment__date" datetime="'
+                . $escaper->escapeHtmlAttr(date('c', strtotime($createdAt))) . '">'
+                . $escaper->escapeHtml(date('F j, Y', strtotime($createdAt))) . '</time>';
+        }
+        $html .= '</div><div class="pb-comment__text">'
+            . nl2br($escaper->escapeHtml((string) $comment->getContent())) . '</div>';
+        if ($canReply && $depth < 4) {
+            $html .= '<button type="button" class="pb-comment__reply" data-pb-reply="' . $id
+                . '" data-pb-reply-name="' . $escaper->escapeHtmlAttr($name)
+                . '" aria-controls="pb-comment-form">' . $escaper->escapeHtml(__('Reply')) . '</button>';
+        }
+        if (!empty($node['replies'])) {
+            $html .= '<ol class="pb-comments__replies">' . $renderNodes($node['replies'], $depth + 1) . '</ol>';
+        }
+        $html .= '</div></li>';
+    }
+
+    return $html;
+};
+?>
+<section id="comments" class="pb-comments">
+    <h2 class="pb-comments__title">
+        <?= $escaper->escapeHtml(__('Comments')) ?> (<?= (int) $count ?>)
+    </h2>
+
+    <?php if ($count === 0): ?>
+        <p class="pb-comments__empty"><?= $escaper->escapeHtml(__('No comments yet. Be the first to leave one.')) ?></p>
+    <?php else: ?>
+        <ol class="pb-comments__list">
+            <?= /* @noEscape */ $renderNodes($vm->getThreaded($comments), 0) ?>
+        </ol>
+    <?php endif; ?>
+
+    <?php if ($canPost): ?>
+        <form class="pb-comment-form" id="pb-comment-form" method="post" action="<?= $escaper->escapeUrl($vm->getSubmitUrl()) ?>">
+            <input name="form_key" type="hidden" value="<?= $escaper->escapeHtmlAttr($vm->getFormKey()) ?>"/>
+            <input name="post_slug" type="hidden" value="<?= $escaper->escapeHtmlAttr($post->getUrlKey()) ?>"/>
+            <input name="parent_id" type="hidden" value="" data-pb-parent/>
+            <div class="pb-comment-form__trap" aria-hidden="true">
+                <label for="pb-comment-website-url"><?= $escaper->escapeHtml(__('Leave this field empty')) ?></label>
+                <input id="pb-comment-website-url" name="pb_website_url" type="text" value="" tabindex="-1"
+                       autocomplete="off"/>
+            </div>
+
+            <h3 class="pb-comment-form__title"><?= $escaper->escapeHtml(__('Leave a comment')) ?></h3>
+            <p class="pb-comment-form__replying" data-pb-replying hidden>
+                <span data-pb-replying-text></span>
+                <button type="button" class="pb-comment-form__cancel" data-pb-reply-cancel>
+                    <?= $escaper->escapeHtml(__('Cancel reply')) ?>
+                </button>
+            </p>
+
+            <div class="pb-comment-form__row">
+                <label class="pb-comment-form__label" for="pb-comment-author-name"><?= $escaper->escapeHtml(__('Name')) ?></label>
+                <input class="pb-comment-form__input" id="pb-comment-author-name" name="author_name" type="text" required
+                       autocomplete="name"/>
+            </div>
+
+            <div class="pb-comment-form__row">
+                <label class="pb-comment-form__label" for="pb-comment-author-email"><?= $escaper->escapeHtml(__('Email')) ?></label>
+                <input class="pb-comment-form__input" id="pb-comment-author-email" name="author_email" type="email"
+                       autocomplete="email"/>
+                <span class="pb-comment-form__hint"><?= $escaper->escapeHtml(__('Not published.')) ?></span>
+            </div>
+
+            <div class="pb-comment-form__row">
+                <label class="pb-comment-form__label" for="pb-comment-content"><?= $escaper->escapeHtml(__('Comment')) ?></label>
+                <textarea class="pb-comment-form__textarea" id="pb-comment-content" name="content" rows="5" required></textarea>
+            </div>
+
+            <?php $captchaProvider = $vm->getCaptchaProvider(); ?>
+            <?php if ($captchaProvider === 'math'): ?>
+                <?php $challenge = $vm->getMathChallenge(); ?>
+                <div class="pb-comment-form__row">
+                    <label class="pb-comment-form__label" for="pb-comment-captcha"><?= $escaper->escapeHtml($challenge['question']) ?></label>
+                    <input class="pb-comment-form__input" id="pb-comment-captcha" name="captcha_answer" type="text"
+                           inputmode="numeric" autocomplete="off" required/>
+                    <input name="captcha_token" type="hidden" value="<?= $escaper->escapeHtmlAttr($challenge['token']) ?>"/>
+                </div>
+            <?php elseif ($captchaProvider === 'hcaptcha'): ?>
+                <div class="pb-comment-form__row">
+                    <div class="h-captcha" data-sitekey="<?= $escaper->escapeHtmlAttr($vm->getCaptchaSiteKey()) ?>"></div>
+                </div>
+                <?= /* @noEscape */ $secureRenderer->renderTag(
+                    'script',
+                    ['src' => 'https://js.hcaptcha.com/1/api.js', 'async' => 'async', 'defer' => 'defer'],
+                    null,
+                    false
+                ) ?>
+            <?php elseif ($captchaProvider === 'cloudflare_turnstile'): ?>
+                <div class="pb-comment-form__row">
+                    <div class="cf-turnstile" data-sitekey="<?= $escaper->escapeHtmlAttr($vm->getCaptchaSiteKey()) ?>"></div>
+                </div>
+                <?= /* @noEscape */ $secureRenderer->renderTag(
+                    'script',
+                    ['src' => 'https://challenges.cloudflare.com/turnstile/v0/api.js', 'async' => 'async', 'defer' => 'defer'],
+                    null,
+                    false
+                ) ?>
+            <?php elseif ($captchaProvider === 'recaptcha_v3'): ?>
+                <?php $siteKey = $vm->getCaptchaSiteKey(); ?>
+                <input name="g-recaptcha-response" type="hidden" value=""
+                       data-sitekey="<?= $escaper->escapeHtmlAttr($siteKey) ?>"/>
+                <?= /* @noEscape */ $secureRenderer->renderTag(
+                    'script',
+                    ['src' => 'https://www.google.com/recaptcha/api.js?render=' . rawurlencode($siteKey)],
+                    null,
+                    false
+                ) ?>
+                <?php $recaptchaScript = <<<'JS'
+(function () {
+    var form = document.getElementById('pb-comment-form');
+    if (!form) {
+        return;
+    }
+    form.addEventListener('submit', function (event) {
+        var field = form.querySelector('input[name="g-recaptcha-response"]');
+        if (!field || field.value !== '' || typeof window.grecaptcha === 'undefined') {
+            return;
+        }
+        event.preventDefault();
+        window.grecaptcha.ready(function () {
+            window.grecaptcha.execute(field.getAttribute('data-sitekey'), {action: 'blog_comment'})
+                .then(function (token) {
+                    field.value = token;
+                    form.submit();
+                });
+        });
+    });
+}());
+JS;
+                ?>
+                <?= /* @noEscape */ $secureRenderer->renderTag('script', [], $recaptchaScript, false) ?>
+            <?php endif; ?>
+
+            <button class="pb-comment-form__submit" type="submit"><?= $escaper->escapeHtml(__('Post comment')) ?></button>
+        </form>
+        <?php $replyLabel = $escaper->escapeJs((string) __('Replying to %1')); ?>
+        <?php $commentFormScript = <<<JS
+(function () {
+    var form = document.getElementById('pb-comment-form');
+    if (!form) {
+        return;
+    }
+    var key = 'pb-comment-draft:' + form.querySelector('input[name="post_slug"]').value;
+    var fields = ['author_name', 'author_email', 'content'];
+    var parent = form.querySelector('[data-pb-parent]');
+    var replying = form.querySelector('[data-pb-replying]');
+    var replyingText = form.querySelector('[data-pb-replying-text]');
+    var store = null;
+    try {
+        store = window.sessionStorage;
+    } catch (e) {
+        store = null;
+    }
+    function setReply(id, name) {
+        parent.value = id ? String(id) : '';
+        replyingText.textContent = id ? '{$replyLabel}'.replace('%1', name || '') : '';
+        replying.hidden = !id;
+    }
+    if (store) {
+        if (window.location.hash === '#comments') {
+            store.removeItem(key);
+        } else {
+            try {
+                var draft = JSON.parse(store.getItem(key) || 'null');
+                if (draft) {
+                    fields.forEach(function (name) {
+                        var input = form.elements[name];
+                        if (input && input.value === '' && typeof draft[name] === 'string') {
+                            input.value = draft[name];
+                        }
+                    });
+                    var source = draft.parent_id
+                        ? document.querySelector('[data-pb-reply="' + parseInt(draft.parent_id, 10) + '"]')
+                        : null;
+                    if (source) {
+                        setReply(draft.parent_id, source.getAttribute('data-pb-reply-name'));
+                    }
+                }
+            } catch (e) {
+                store.removeItem(key);
+            }
+        }
+    }
+    document.querySelectorAll('[data-pb-reply]').forEach(function (button) {
+        button.addEventListener('click', function () {
+            setReply(button.getAttribute('data-pb-reply'), button.getAttribute('data-pb-reply-name'));
+            form.scrollIntoView({block: 'start'});
+            form.elements.content.focus({preventScroll: true});
+        });
+    });
+    form.querySelector('[data-pb-reply-cancel]').addEventListener('click', function () {
+        setReply('', '');
+        form.elements.content.focus();
+    });
+    form.addEventListener('submit', function () {
+        if (!store) {
+            return;
+        }
+        var draft = {parent_id: parent.value};
+        fields.forEach(function (name) {
+            draft[name] = form.elements[name] ? form.elements[name].value : '';
+        });
+        try {
+            store.setItem(key, JSON.stringify(draft));
+        } catch (e) {
+            store = null;
+        }
+    });
+}());
+JS;
+        ?>
+        <?= /* @noEscape */ $secureRenderer->renderTag('script', [], $commentFormScript, false) ?>
+    <?php elseif ($reason !== ''): ?>
+        <p class="pb-comments__locked"><?= $escaper->escapeHtml($reason) ?></p>
+    <?php endif; ?>
+</section>

@@ -1,0 +1,90 @@
+<?php
+declare(strict_types=1);
+/**
+ * @var \Magento\Framework\View\Element\Template $block
+ * @var \Magento\Framework\Escaper $escaper
+ * @var \Magento\Framework\View\Helper\SecureHtmlRenderer $secureRenderer
+ */
+$toc = (array)$block->getData('toc');
+if (empty($toc)) {
+    return;
+}
+?>
+<nav class="pb-toc" aria-label="<?= $escaper->escapeHtmlAttr(__('Table of contents')) ?>">
+    <p class="pb-toc__title"><?= $escaper->escapeHtml(__('On this page')) ?></p>
+    <ol class="pb-toc__list">
+        <?php foreach ($toc as $item):
+            $level = (int)($item['level'] ?? 2);
+            $anchor = (string)($item['anchor'] ?? '');
+            $text = (string)($item['text'] ?? '');
+            if ($anchor === '' || $text === '') {
+                continue;
+            }
+            ?>
+            <li class="pb-toc__item pb-toc__item--level-<?= (int)$level ?>">
+                <a href="#<?= $escaper->escapeHtmlAttr($anchor) ?>">
+                    <?= $escaper->escapeHtml($text) ?>
+                </a>
+            </li>
+        <?php endforeach; ?>
+    </ol>
+</nav>
+<?php $tocScript = <<<'JS'
+(function () {
+    function init() {
+        var nav = document.querySelector('.pb-toc');
+        if (!nav) {
+            return;
+        }
+        var links = Array.prototype.slice.call(nav.querySelectorAll('a[href^="#"]'));
+        var items = [];
+        links.forEach(function (link) {
+            var target = document.getElementById(decodeURIComponent(link.getAttribute('href').slice(1)));
+            if (target) {
+                items.push({link: link, target: target});
+            }
+        });
+        if (!items.length) {
+            return;
+        }
+        var active = null;
+        var ticking = false;
+        function update() {
+            ticking = false;
+            var offset = Math.min(160, window.innerHeight * 0.3);
+            var current = null;
+            items.forEach(function (item) {
+                if (item.target.getBoundingClientRect().top - offset <= 0) {
+                    current = item;
+                }
+            });
+            if (current === active) {
+                return;
+            }
+            if (active) {
+                active.link.classList.remove('is-active');
+                active.link.removeAttribute('aria-current');
+            }
+            active = current;
+            if (active) {
+                active.link.classList.add('is-active');
+                active.link.setAttribute('aria-current', 'location');
+            }
+        }
+        window.addEventListener('scroll', function () {
+            if (!ticking) {
+                ticking = true;
+                window.requestAnimationFrame(update);
+            }
+        }, {passive: true});
+        update();
+    }
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', init);
+    } else {
+        init();
+    }
+}());
+JS;
+?>
+<?= /* @noEscape */ $secureRenderer->renderTag('script', [], $tocScript, false) ?>

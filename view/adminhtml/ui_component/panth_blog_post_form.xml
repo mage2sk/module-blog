@@ -1,0 +1,443 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<form xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Ui:etc/ui_configuration.xsd">
+    <argument name="data" xsi:type="array">
+        <item name="js_config" xsi:type="array">
+            <item name="provider" xsi:type="string">panth_blog_post_form.panth_blog_post_form_data_source</item>
+        </item>
+        <item name="label" xsi:type="string" translate="true">Post Information</item>
+        <item name="template" xsi:type="string">templates/form/collapsible</item>
+    </argument>
+    <settings>
+        <buttons>
+            <button name="back" class="Panth\Blog\Block\Adminhtml\Post\Edit\Button\Back"/>
+            <button name="save" class="Panth\Blog\Block\Adminhtml\Post\Edit\Button\Save"/>
+            <button name="save_and_continue" class="Panth\Blog\Block\Adminhtml\Post\Edit\Button\SaveAndContinue"/>
+            <button name="reset" class="Panth\Blog\Block\Adminhtml\Post\Edit\Button\Reset"/>
+            <button name="delete" class="Panth\Blog\Block\Adminhtml\Post\Edit\Button\Delete"/>
+        </buttons>
+        <namespace>panth_blog_post_form</namespace>
+        <dataScope>data</dataScope>
+        <deps>
+            <dep>panth_blog_post_form.panth_blog_post_form_data_source</dep>
+        </deps>
+    </settings>
+    <dataSource name="panth_blog_post_form_data_source">
+        <argument name="data" xsi:type="array">
+            <item name="js_config" xsi:type="array">
+                <item name="component" xsi:type="string">Magento_Ui/js/form/provider</item>
+            </item>
+        </argument>
+        <settings>
+            <submitUrl path="*/*/save"/>
+        </settings>
+        <dataProvider class="Panth\Blog\Model\Post\DataProvider" name="panth_blog_post_form_data_source">
+            <settings>
+                <requestFieldName>id</requestFieldName>
+                <primaryFieldName>post_id</primaryFieldName>
+            </settings>
+        </dataProvider>
+    </dataSource>
+    <fieldset name="content">
+        <settings>
+            <label translate="true">Content</label>
+        </settings>
+        <field name="post_id" formElement="input">
+            <settings>
+                <dataType>text</dataType>
+                <visible>false</visible>
+                <dataScope>post_id</dataScope>
+            </settings>
+        </field>
+        <field name="title" formElement="input">
+            <settings>
+                <label translate="true">Title</label>
+                <dataType>text</dataType>
+                <dataScope>title</dataScope>
+                <validation>
+                    <rule name="required-entry" xsi:type="boolean">true</rule>
+                </validation>
+            </settings>
+        </field>
+        <field name="url_key" formElement="input">
+            <settings>
+                <label translate="true">URL Key</label>
+                <dataType>text</dataType>
+                <dataScope>url_key</dataScope>
+            </settings>
+        </field>
+        <field name="short_description" formElement="textarea">
+            <settings>
+                <label translate="true">Short Description</label>
+                <dataType>text</dataType>
+                <dataScope>short_description</dataScope>
+            </settings>
+        </field>
+        <field name="content" formElement="wysiwyg">
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="wysiwygConfigData" xsi:type="array">
+                        <item name="height" xsi:type="string">400px</item>
+                        <item name="is_pagebuilder_enabled" xsi:type="boolean">false</item>
+                        <item name="add_variables" xsi:type="boolean">false</item>
+                        <item name="add_widgets" xsi:type="boolean">false</item>
+                        <item name="add_images" xsi:type="boolean">true</item>
+                        <item name="add_directives" xsi:type="boolean">false</item>
+                    </item>
+                </item>
+            </argument>
+            <settings>
+                <label translate="true">Content</label>
+                <dataType>text</dataType>
+                <dataScope>content</dataScope>
+            </settings>
+            <formElements>
+                <wysiwyg>
+                    <settings>
+                        <wysiwyg>true</wysiwyg>
+                        <rows>20</rows>
+                    </settings>
+                </wysiwyg>
+            </formElements>
+        </field>
+        <field name="featured_image" formElement="imageUploader">
+            <settings>
+                <label translate="true">Featured Image</label>
+                <dataType>text</dataType>
+                <dataScope>featured_image</dataScope>
+            </settings>
+            <formElements>
+                <imageUploader>
+                    <settings>
+                        <required>false</required>
+                        <uploaderConfig>
+                            <param xsi:type="url" name="url" path="panth_blog/image/upload"/>
+                        </uploaderConfig>
+                        <previewTmpl>Magento_Catalog/image-preview</previewTmpl>
+                        <allowedExtensions>jpg jpeg gif png webp</allowedExtensions>
+                        <maxFileSize>4194304</maxFileSize>
+                    </settings>
+                </imageUploader>
+            </formElements>
+        </field>
+        <field name="featured_image_alt" formElement="input">
+            <settings>
+                <label translate="true">Featured Image Alt</label>
+                <dataType>text</dataType>
+                <dataScope>featured_image_alt</dataScope>
+            </settings>
+        </field>
+    </fieldset>
+    <fieldset name="publishing">
+        <settings>
+            <label translate="true">Publishing</label>
+            <collapsible>true</collapsible>
+        </settings>
+        <field name="status" formElement="select">
+            <settings>
+                <label translate="true">Status</label>
+                <dataType>text</dataType>
+                <dataScope>status</dataScope>
+            </settings>
+            <formElements>
+                <select>
+                    <settings>
+                        <options class="Panth\Blog\Model\Config\Source\PostStatus"/>
+                    </settings>
+                </select>
+            </formElements>
+        </field>
+        <field name="published_at" formElement="date">
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="timezoneFormat" xsi:type="string">YYYY-MM-DD HH:mm:ss</item>
+                </item>
+            </argument>
+            <settings>
+                <label translate="true">Published At</label>
+                <dataType>text</dataType>
+                <dataScope>published_at</dataScope>
+            </settings>
+            <formElements>
+                <date>
+                    <settings>
+                        <options>
+                            <option name="showsTime" xsi:type="boolean">true</option>
+                            <option name="timeFormat" xsi:type="string">HH:mm:ss</option>
+                        </options>
+                    </settings>
+                </date>
+            </formElements>
+        </field>
+        <field name="is_featured" formElement="checkbox">
+            <settings>
+                <label translate="true">Featured</label>
+                <dataType>boolean</dataType>
+                <dataScope>is_featured</dataScope>
+            </settings>
+            <formElements>
+                <checkbox>
+                    <settings>
+                        <valueMap>
+                            <map name="false" xsi:type="number">0</map>
+                            <map name="true" xsi:type="number">1</map>
+                        </valueMap>
+                        <prefer>toggle</prefer>
+                    </settings>
+                </checkbox>
+            </formElements>
+        </field>
+        <field name="enable_comments" formElement="checkbox">
+            <settings>
+                <label translate="true">Enable Comments</label>
+                <dataType>boolean</dataType>
+                <dataScope>enable_comments</dataScope>
+            </settings>
+            <formElements>
+                <checkbox>
+                    <settings>
+                        <valueMap>
+                            <map name="false" xsi:type="number">0</map>
+                            <map name="true" xsi:type="number">1</map>
+                        </valueMap>
+                        <prefer>toggle</prefer>
+                    </settings>
+                </checkbox>
+            </formElements>
+        </field>
+        <field name="enable_toc" formElement="checkbox">
+            <settings>
+                <label translate="true">Enable Table of Contents</label>
+                <dataType>boolean</dataType>
+                <dataScope>enable_toc</dataScope>
+            </settings>
+            <formElements>
+                <checkbox>
+                    <settings>
+                        <valueMap>
+                            <map name="false" xsi:type="number">0</map>
+                            <map name="true" xsi:type="number">1</map>
+                        </valueMap>
+                        <prefer>toggle</prefer>
+                    </settings>
+                </checkbox>
+            </formElements>
+        </field>
+        <field name="layout_template" formElement="select">
+            <settings>
+                <label translate="true">Layout Template</label>
+                <dataType>text</dataType>
+                <dataScope>layout_template</dataScope>
+            </settings>
+            <formElements>
+                <select>
+                    <settings>
+                        <options class="Panth\Blog\Model\Config\Source\PostLayout"/>
+                    </settings>
+                </select>
+            </formElements>
+        </field>
+        <field name="sort_order" formElement="input">
+            <settings>
+                <label translate="true">Sort Order</label>
+                <dataType>number</dataType>
+                <dataScope>sort_order</dataScope>
+            </settings>
+        </field>
+    </fieldset>
+    <fieldset name="categorisation">
+        <settings>
+            <label translate="true">Categorisation</label>
+            <collapsible>true</collapsible>
+        </settings>
+        <field name="author_id" formElement="select">
+            <settings>
+                <label translate="true">Author</label>
+                <dataType>text</dataType>
+                <dataScope>author_id</dataScope>
+            </settings>
+            <formElements>
+                <select>
+                    <settings>
+                        <options class="Panth\Blog\Model\Config\Source\Authors"/>
+                    </settings>
+                </select>
+            </formElements>
+        </field>
+        <field name="links_submitted" formElement="hidden">
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="default" xsi:type="string">1</item>
+                </item>
+            </argument>
+            <settings>
+                <dataType>text</dataType>
+                <dataScope>links_submitted</dataScope>
+            </settings>
+        </field>
+        <field name="store_ids" formElement="multiselect">
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="default" xsi:type="array">
+                        <item name="0" xsi:type="string">0</item>
+                    </item>
+                </item>
+            </argument>
+            <settings>
+                <label translate="true">Store View</label>
+                <dataType>int</dataType>
+                <dataScope>store_ids</dataScope>
+                <validation>
+                    <rule name="required-entry" xsi:type="boolean">true</rule>
+                </validation>
+                <notice translate="true">All Store Views shows the post in every store.</notice>
+            </settings>
+            <formElements>
+                <multiselect>
+                    <settings>
+                        <options class="Magento\Cms\Ui\Component\Listing\Column\Cms\Options"/>
+                    </settings>
+                </multiselect>
+            </formElements>
+        </field>
+        <field name="category_ids" formElement="multiselect">
+            <settings>
+                <label translate="true">Categories</label>
+                <dataType>int</dataType>
+                <dataScope>category_ids</dataScope>
+            </settings>
+            <formElements>
+                <multiselect>
+                    <settings>
+                        <options class="Panth\Blog\Model\Config\Source\Categories"/>
+                    </settings>
+                </multiselect>
+            </formElements>
+        </field>
+        <field name="primary_category_id" formElement="select">
+            <settings>
+                <label translate="true">Primary Category</label>
+                <dataType>int</dataType>
+                <dataScope>primary_category_id</dataScope>
+                <notice translate="true">Used for breadcrumbs and the post badge. Defaults to the first selected category.</notice>
+            </settings>
+            <formElements>
+                <select>
+                    <settings>
+                        <options class="Panth\Blog\Model\Config\Source\Categories"/>
+                        <caption translate="true">-- First selected category --</caption>
+                    </settings>
+                </select>
+            </formElements>
+        </field>
+        <field name="tag_ids" formElement="multiselect">
+            <settings>
+                <label translate="true">Tags</label>
+                <dataType>int</dataType>
+                <dataScope>tag_ids</dataScope>
+            </settings>
+            <formElements>
+                <multiselect>
+                    <settings>
+                        <options class="Panth\Blog\Model\Config\Source\Tags"/>
+                    </settings>
+                </multiselect>
+            </formElements>
+        </field>
+        <field name="related_ids" formElement="multiselect">
+            <settings>
+                <label translate="true">Related Posts</label>
+                <dataType>int</dataType>
+                <dataScope>related_ids</dataScope>
+                <notice translate="true">Shown first in the Related posts block; remaining slots are filled from the primary category.</notice>
+            </settings>
+            <formElements>
+                <multiselect>
+                    <settings>
+                        <options class="Panth\Blog\Model\Config\Source\Posts"/>
+                    </settings>
+                </multiselect>
+            </formElements>
+        </field>
+    </fieldset>
+    <fieldset name="seo">
+        <settings>
+            <label translate="true">SEO</label>
+            <collapsible>true</collapsible>
+        </settings>
+        <field name="meta_title" formElement="input">
+            <settings>
+                <label translate="true">Meta Title</label>
+                <dataType>text</dataType>
+                <dataScope>meta_title</dataScope>
+            </settings>
+        </field>
+        <field name="meta_description" formElement="textarea">
+            <settings>
+                <label translate="true">Meta Description</label>
+                <dataType>text</dataType>
+                <dataScope>meta_description</dataScope>
+            </settings>
+        </field>
+        <field name="meta_keywords" formElement="input">
+            <settings>
+                <label translate="true">Meta Keywords</label>
+                <dataType>text</dataType>
+                <dataScope>meta_keywords</dataScope>
+            </settings>
+        </field>
+        <field name="meta_robots" formElement="input">
+            <settings>
+                <label translate="true">Meta Robots</label>
+                <dataType>text</dataType>
+                <dataScope>meta_robots</dataScope>
+            </settings>
+        </field>
+        <field name="canonical_url" formElement="input">
+            <settings>
+                <label translate="true">Canonical URL</label>
+                <dataType>text</dataType>
+                <dataScope>canonical_url</dataScope>
+            </settings>
+        </field>
+        <field name="og_image" formElement="imageUploader">
+            <settings>
+                <label translate="true">OG Image</label>
+                <dataType>text</dataType>
+                <dataScope>og_image</dataScope>
+            </settings>
+            <formElements>
+                <imageUploader>
+                    <settings>
+                        <required>false</required>
+                        <uploaderConfig>
+                            <param xsi:type="url" name="url" path="panth_blog/image/upload"/>
+                        </uploaderConfig>
+                        <previewTmpl>Magento_Catalog/image-preview</previewTmpl>
+                        <allowedExtensions>jpg jpeg gif png webp</allowedExtensions>
+                        <maxFileSize>4194304</maxFileSize>
+                    </settings>
+                </imageUploader>
+            </formElements>
+        </field>
+    </fieldset>
+    <fieldset name="aeo">
+        <settings>
+            <label translate="true">AEO / AIO</label>
+            <collapsible>true</collapsible>
+        </settings>
+        <field name="tldr_summary" formElement="textarea">
+            <settings>
+                <label translate="true">TL;DR Summary</label>
+                <dataType>text</dataType>
+                <dataScope>tldr_summary</dataScope>
+            </settings>
+        </field>
+        <field name="citation_list" formElement="textarea">
+            <settings>
+                <label translate="true">Citation List (JSON)</label>
+                <dataType>text</dataType>
+                <dataScope>citation_list</dataScope>
+            </settings>
+        </field>
+    </fieldset>
+</form>

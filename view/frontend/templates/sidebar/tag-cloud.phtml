@@ -1,0 +1,30 @@
+<?php
+declare(strict_types=1);
+/** @var \Magento\Framework\View\Element\Template $block */
+/** @var \Magento\Framework\Escaper $escaper */
+/** @var \Panth\Blog\ViewModel\Sidebar $viewModel */
+$viewModel = $block->getData('view_model');
+$tags = $viewModel ? $viewModel->getTagCloud() : [];
+if (empty($tags)) {
+    return;
+}
+?>
+<section class="pb-sidebar__widget pb-sidebar__widget--tags">
+    <h3 class="pb-sidebar__widget-title"><?= $escaper->escapeHtml(__('Tags')) ?></h3>
+    <div class="pb-tag-cloud">
+        <?php foreach ($tags as $tag):
+            $url = (string)($tag['url'] ?? '');
+            $name = (string)($tag['name'] ?? '');
+            $count = (int)($tag['count'] ?? 0);
+            $scale = (float)($tag['scale'] ?? 0.5);
+            $size = 12 + (int)round(($scale ?: 0.5) * 4);
+            if ($name === '') {
+                continue;
+            }
+        ?>
+            <a class="pb-tag-cloud__item" href="<?= $escaper->escapeUrl($url) ?>" style="font-size: <?= (int)$size ?>px;">
+                #<?= $escaper->escapeHtml($name) ?>
+            </a>
+        <?php endforeach; ?>
+    </div>
+</section>

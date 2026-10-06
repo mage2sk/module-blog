@@ -1,0 +1,15 @@
+<?php
+declare(strict_types=1);
+/**
+ * @var \Magento\Framework\View\Element\Template $block
+ * @var \Magento\Framework\Escaper $escaper
+ * @var \Panth\Blog\ViewModel\PostView $vm
+ */
+$vm = $block->getData('view_model');
+if (!$vm) {
+    return;
+}
+?>
+<div class="pb-post__content pb-prose">
+    <?= /** @noEscape */ $vm->getProcessedContent() ?>
+</div>

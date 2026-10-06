@@ -1,0 +1,8 @@
+.idea/
+.DS_Store
+*.swp
+*.swo
+*.bak
+*.orig
+vendor/
+node_modules/

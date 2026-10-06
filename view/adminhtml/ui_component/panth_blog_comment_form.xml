@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<form xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Ui:etc/ui_configuration.xsd">
+    <argument name="data" xsi:type="array">
+        <item name="js_config" xsi:type="array">
+            <item name="provider" xsi:type="string">panth_blog_comment_form.panth_blog_comment_form_data_source</item>
+        </item>
+        <item name="label" xsi:type="string" translate="true">Comment Information</item>
+        <item name="template" xsi:type="string">templates/form/collapsible</item>
+    </argument>
+    <settings>
+        <buttons>
+            <button name="back" class="Panth\Blog\Block\Adminhtml\Comment\Edit\Button\Back"/>
+            <button name="save" class="Panth\Blog\Block\Adminhtml\Comment\Edit\Button\Save"/>
+            <button name="save_and_continue" class="Panth\Blog\Block\Adminhtml\Comment\Edit\Button\SaveAndContinue"/>
+            <button name="reset" class="Panth\Blog\Block\Adminhtml\Comment\Edit\Button\Reset"/>
+            <button name="delete" class="Panth\Blog\Block\Adminhtml\Comment\Edit\Button\Delete"/>
+        </buttons>
+        <namespace>panth_blog_comment_form</namespace>
+        <dataScope>data</dataScope>
+        <deps>
+            <dep>panth_blog_comment_form.panth_blog_comment_form_data_source</dep>
+        </deps>
+    </settings>
+    <dataSource name="panth_blog_comment_form_data_source">
+        <argument name="data" xsi:type="array">
+            <item name="js_config" xsi:type="array">
+                <item name="component" xsi:type="string">Magento_Ui/js/form/provider</item>
+            </item>
+        </argument>
+        <settings>
+            <submitUrl path="*/*/save"/>
+        </settings>
+        <dataProvider class="Panth\Blog\Model\Comment\DataProvider" name="panth_blog_comment_form_data_source">
+            <settings>
+                <requestFieldName>id</requestFieldName>
+                <primaryFieldName>comment_id</primaryFieldName>
+            </settings>
+        </dataProvider>
+    </dataSource>
+    <fieldset name="general">
+        <settings>
+            <label translate="true">Comment</label>
+        </settings>
+        <field name="comment_id" formElement="input">
+            <settings>
+                <dataType>text</dataType>
+                <visible>false</visible>
+                <dataScope>comment_id</dataScope>
+            </settings>
+        </field>
+        <field name="post_id" formElement="input">
+            <settings>
+                <label translate="true">Post ID</label>
+                <dataType>text</dataType>
+                <dataScope>post_id</dataScope>
+                <elementTmpl>ui/form/element/text</elementTmpl>
+            </settings>
+        </field>
+        <field name="author_name" formElement="input">
+            <settings>
+                <label translate="true">Author Name</label>
+                <dataType>text</dataType>
+                <dataScope>author_name</dataScope>
+                <elementTmpl>ui/form/element/text</elementTmpl>
+            </settings>
+        </field>
+        <field name="author_email" formElement="input">
+            <settings>
+                <label translate="true">Author Email</label>
+                <dataType>text</dataType>
+                <dataScope>author_email</dataScope>
+                <elementTmpl>ui/form/element/text</elementTmpl>
+            </settings>
+        </field>
+        <field name="author_website" formElement="input">
+            <settings>
+                <label translate="true">Author Website</label>
+                <dataType>text</dataType>
+                <dataScope>author_website</dataScope>
+                <elementTmpl>ui/form/element/text</elementTmpl>
+            </settings>
+        </field>
+        <field name="created_at" formElement="input">
+            <settings>
+                <label translate="true">Submitted At</label>
+                <dataType>text</dataType>
+                <dataScope>created_at</dataScope>
+                <elementTmpl>ui/form/element/text</elementTmpl>
+            </settings>
+        </field>
+        <field name="content" formElement="textarea">
+            <settings>
+                <label translate="true">Content</label>
+                <dataType>text</dataType>
+                <dataScope>content</dataScope>
+            </settings>
+        </field>
+        <field name="status" formElement="select">
+            <settings>
+                <label translate="true">Status</label>
+                <dataType>text</dataType>
+                <dataScope>status</dataScope>
+            </settings>
+            <formElements>
+                <select>
+                    <settings>
+                        <options class="Panth\Blog\Model\Config\Source\CommentStatus"/>
+                    </settings>
+                </select>
+            </formElements>
+        </field>
+        <field name="user_agent" formElement="input">
+            <settings>
+                <label translate="true">User Agent</label>
+                <dataType>text</dataType>
+                <dataScope>user_agent</dataScope>
+                <elementTmpl>ui/form/element/text</elementTmpl>
+            </settings>
+        </field>
+    </fieldset>
+</form>

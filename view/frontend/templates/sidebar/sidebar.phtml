@@ -1,0 +1,27 @@
+<?php
+declare(strict_types=1);
+/** @var \Magento\Framework\View\Element\Template $block */
+/** @var \Magento\Framework\Escaper $escaper */
+/** @var \Panth\Blog\ViewModel\Sidebar $viewModel */
+$viewModel = $block->getData('view_model');
+if (!$viewModel) {
+    return;
+}
+?>
+<div class="pb-sidebar">
+    <?php if ($viewModel->isShowSearch()): ?>
+        <?= $block->getLayout()->createBlock(\Magento\Framework\View\Element\Template::class)->setTemplate('Panth_Blog::sidebar/search.phtml')->setData('view_model', $viewModel)->toHtml() ?>
+    <?php endif; ?>
+    <?php if ($viewModel->isShowRecent()): ?>
+        <?= $block->getLayout()->createBlock(\Magento\Framework\View\Element\Template::class)->setTemplate('Panth_Blog::sidebar/recent.phtml')->setData('view_model', $viewModel)->toHtml() ?>
+    <?php endif; ?>
+    <?php if ($viewModel->isShowCategories()): ?>
+        <?= $block->getLayout()->createBlock(\Magento\Framework\View\Element\Template::class)->setTemplate('Panth_Blog::sidebar/categories.phtml')->setData('view_model', $viewModel)->toHtml() ?>
+    <?php endif; ?>
+    <?php if ($viewModel->isShowTagCloud()): ?>
+        <?= $block->getLayout()->createBlock(\Magento\Framework\View\Element\Template::class)->setTemplate('Panth_Blog::sidebar/tag-cloud.phtml')->setData('view_model', $viewModel)->toHtml() ?>
+    <?php endif; ?>
+    <?php if ($viewModel->isShowSubscribe()): ?>
+        <?= $block->getLayout()->createBlock(\Magento\Framework\View\Element\Template::class)->setTemplate('Panth_Blog::sidebar/subscribe.phtml')->setData('view_model', $viewModel)->toHtml() ?>
+    <?php endif; ?>
+</div>

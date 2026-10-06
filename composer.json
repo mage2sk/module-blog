@@ -1,0 +1,50 @@
+{
+    "name": "mage2kishan/module-blog",
+    "description": "Panth_Blog - SEO-grade blog module for Magento 2 with first-class AEO/AIO support: JSON-LD, llms.txt, IndexNow, hreflang, markdown export, RSS/Atom feeds, and Hyva-first templates. Built to plug into the Panth_* ecosystem.",
+    "type": "magento2-module",
+    "version": "1.3.13",
+    "license": "proprietary",
+    "authors": [
+        {
+            "name": "Kishan Savaliya",
+            "email": "kishansavaliyakb@gmail.com"
+        }
+    ],
+    "keywords": [
+        "magento2",
+        "magento2-module",
+        "panth",
+        "blog",
+        "seo",
+        "aeo",
+        "aio",
+        "geo",
+        "hyva",
+        "luma",
+        "json-ld",
+        "llms-txt",
+        "indexnow"
+    ],
+    "require": {
+        "php": "~8.1.0||~8.2.0||~8.3.0||~8.4.0",
+        "magento/framework": "^103.0",
+        "magento/module-backend": "^102.0",
+        "magento/module-catalog": "^104.0",
+        "magento/module-cms": "^104.0",
+        "magento/module-store": "^101.0",
+        "magento/module-ui": "^101.0",
+        "magento/module-url-rewrite": "^102.0",
+        "mage2kishan/module-core": "^1.0"
+    },
+    "autoload": {
+        "files": [
+            "registration.php"
+        ],
+        "psr-4": {
+            "Panth\\Blog\\": ""
+        }
+    },
+    "suggest": {
+        "mage2kishan/module-social-meta": "Enables per-post Open Graph and Twitter card images on blog post pages"
+    }
+}

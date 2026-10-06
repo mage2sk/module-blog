@@ -1,0 +1,173 @@
+<?php
+declare(strict_types=1);
+/**
+ * @var \Magento\Framework\View\Element\Template $block
+ * @var \Magento\Framework\Escaper $escaper
+ * @var \Panth\Blog\ViewModel\BlogIndex $viewModel
+ * @var \Panth\Blog\ViewModel\Sidebar $sidebarViewModel
+ * @var \Panth\Blog\ViewModel\Pagination $paginationViewModel
+ */
+$viewModel = $block->getData('view_model');
+$sidebarViewModel = $block->getData('sidebar_view_model');
+$paginationViewModel = $block->getData('pagination_view_model');
+
+$posts = method_exists($viewModel, 'getPosts') ? ($viewModel->getPosts() ?? []) : [];
+$currentPage = method_exists($viewModel, 'getCurrentPage') ? (int)$viewModel->getCurrentPage() : 1;
+$total = method_exists($viewModel, 'getTotalPosts') ? (int)$viewModel->getTotalPosts() : count($posts);
+$perPage = method_exists($viewModel, 'getPostsPerPage') ? (int)$viewModel->getPostsPerPage() : 10;
+$indexTitle = method_exists($viewModel, 'getIndexTitle') ? (string)$viewModel->getIndexTitle() : (string)__('Blog');
+$heroText = method_exists($viewModel, 'getHeroText') ? (string)$viewModel->getHeroText() : '';
+$showReadingTime = method_exists($viewModel, 'isShowReadingTime') ? (bool)$viewModel->isShowReadingTime() : true;
+$jsonLd = method_exists($viewModel, 'getJsonLd') ? (string)$viewModel->getJsonLd() : '';
+
+/** Render a single post card (li) inside .pb-post-list. */
+$renderCard = static function ($post) use ($escaper, $viewModel, $showReadingTime): void {
+    $title = method_exists($post, 'getTitle') ? (string)$post->getTitle() : '';
+    $postUrl = ($viewModel && method_exists($viewModel, 'getPostUrl')) ? (string)$viewModel->getPostUrl($post) : '#';
+    $img = method_exists($post, 'getFeaturedImage') ? (string)($post->getFeaturedImage() ?? '') : '';
+    $alt = method_exists($post, 'getFeaturedImageAlt') ? (string)($post->getFeaturedImageAlt() ?? '') : '';
+    $shortDesc = method_exists($post, 'getShortDescription') ? (string)($post->getShortDescription() ?? '') : '';
+    $publishedAt = method_exists($post, 'getPublishedAt') ? (string)($post->getPublishedAt() ?? '') : '';
+    $readingTime = method_exists($post, 'getReadingTimeMin') ? (int)($post->getReadingTimeMin() ?? 0) : 0;
+    $mediaUrl = ($img !== '' && $viewModel && method_exists($viewModel, 'getMediaUrl')) ? (string)$viewModel->getMediaUrl($img) : '';
+    $altText = $alt !== '' ? $alt : $title;
+    ?>
+    <li class="pb-post-card">
+        <a class="pb-post-card__media" href="<?= $escaper->escapeUrl($postUrl) ?>">
+            <?php if ($mediaUrl !== ''): ?>
+                <img src="<?= $escaper->escapeUrl($mediaUrl) ?>"
+                     alt="<?= $escaper->escapeHtmlAttr($altText) ?>"
+                     loading="lazy"/>
+            <?php else: ?>
+                <div class="pb-post-card__media-placeholder" aria-hidden="true"></div>
+            <?php endif; ?>
+        </a>
+        <div class="pb-post-card__body">
+            <h3 class="pb-post-card__title">
+                <a href="<?= $escaper->escapeUrl($postUrl) ?>"><?= $escaper->escapeHtml($title) ?></a>
+            </h3>
+            <?php if ($shortDesc !== ''): ?>
+                <p class="pb-post-card__excerpt"><?= $escaper->escapeHtml($shortDesc) ?></p>
+            <?php endif; ?>
+            <div class="pb-post-card__meta">
+                <?php if ($publishedAt !== ''): ?>
+                    <time datetime="<?= $escaper->escapeHtmlAttr(date('c', strtotime($publishedAt))) ?>">
+                        <?= $escaper->escapeHtml(date('M j, Y', strtotime($publishedAt))) ?>
+                    </time>
+                <?php endif; ?>
+                <?php if ($showReadingTime && $readingTime > 0): ?>
+                    <span class="pb-meta__dot" aria-hidden="true"></span>
+                    <span class="pb-post-card__reading-time"><?= (int)$readingTime ?> <?= $escaper->escapeHtml(__('min read')) ?></span>
+                <?php endif; ?>
+            </div>
+        </div>
+    </li>
+    <?php
+};
+
+$featured = null;
+if ($currentPage === 1 && !empty($posts)) {
+    $featured = array_shift($posts);
+}
+?>
+<section class="pb-page pb-blog-index">
+    <header class="pb-page-header pb-blog-index__header">
+        <h1 class="pb-page-header__title"><?= $escaper->escapeHtml($indexTitle) ?></h1>
+        <?php if ($heroText !== ''): ?>
+            <p class="pb-page-header__lede"><?= $escaper->escapeHtml($heroText) ?></p>
+        <?php endif; ?>
+        <hr class="pb-page-header__rule" aria-hidden="true"/>
+    </header>
+
+    <?php if ($featured !== null):
+        $fTitle = method_exists($featured, 'getTitle') ? (string)$featured->getTitle() : '';
+        $fUrl = ($viewModel && method_exists($viewModel, 'getPostUrl')) ? (string)$viewModel->getPostUrl($featured) : '#';
+        $fImg = method_exists($featured, 'getFeaturedImage') ? (string)($featured->getFeaturedImage() ?? '') : '';
+        $fAlt = method_exists($featured, 'getFeaturedImageAlt') ? (string)($featured->getFeaturedImageAlt() ?? '') : '';
+        $fShort = method_exists($featured, 'getShortDescription') ? (string)($featured->getShortDescription() ?? '') : '';
+        $fPublishedAt = method_exists($featured, 'getPublishedAt') ? (string)($featured->getPublishedAt() ?? '') : '';
+        $fReadingTime = method_exists($featured, 'getReadingTimeMin') ? (int)($featured->getReadingTimeMin() ?? 0) : 0;
+        $fMedia = ($fImg !== '' && $viewModel && method_exists($viewModel, 'getMediaUrl')) ? (string)$viewModel->getMediaUrl($fImg) : '';
+        $fAltText = $fAlt !== '' ? $fAlt : $fTitle;
+        ?>
+        <article class="pb-featured-post">
+            <a href="<?= $escaper->escapeUrl($fUrl) ?>" class="pb-featured-post__media">
+                <?php if ($fMedia !== ''): ?>
+                    <img src="<?= $escaper->escapeUrl($fMedia) ?>"
+                         alt="<?= $escaper->escapeHtmlAttr($fAltText) ?>"
+                         loading="eager"/>
+                <?php else: ?>
+                    <div class="pb-featured-post__media-placeholder" aria-hidden="true"></div>
+                <?php endif; ?>
+            </a>
+            <div class="pb-featured-post__body">
+                <span class="pb-featured-post__tag"><?= $escaper->escapeHtml(__('Featured')) ?></span>
+                <h2 class="pb-featured-post__title">
+                    <a href="<?= $escaper->escapeUrl($fUrl) ?>"><?= $escaper->escapeHtml($fTitle) ?></a>
+                </h2>
+                <?php if ($fShort !== ''): ?>
+                    <p class="pb-featured-post__excerpt"><?= $escaper->escapeHtml($fShort) ?></p>
+                <?php endif; ?>
+                <div class="pb-featured-post__meta">
+                    <?php if ($fPublishedAt !== ''): ?>
+                        <time datetime="<?= $escaper->escapeHtmlAttr(date('c', strtotime($fPublishedAt))) ?>">
+                            <?= $escaper->escapeHtml(date('M j, Y', strtotime($fPublishedAt))) ?>
+                        </time>
+                    <?php endif; ?>
+                    <?php if ($showReadingTime && $fReadingTime > 0): ?>
+                        <span class="pb-meta__dot" aria-hidden="true"></span>
+                        <span><?= (int)$fReadingTime ?> <?= $escaper->escapeHtml(__('min read')) ?></span>
+                    <?php endif; ?>
+                </div>
+                <a href="<?= $escaper->escapeUrl($fUrl) ?>" class="pb-featured-post__cta">
+                    <?= $escaper->escapeHtml(__('Read more')) ?>
+                    <span aria-hidden="true">&rarr;</span>
+                </a>
+            </div>
+        </article>
+    <?php endif; ?>
+
+    <div class="pb-layout">
+        <main class="pb-layout__main pb-blog-index__main">
+            <?php if (empty($posts) && $featured === null): ?>
+                <p class="pb-empty"><?= $escaper->escapeHtml(__('No posts yet.')) ?></p>
+            <?php elseif (!empty($posts)): ?>
+                <ul class="pb-post-list pb-list--grid">
+                    <?php foreach ($posts as $post): ?>
+                        <?php $renderCard($post); ?>
+                    <?php endforeach; ?>
+                </ul>
+            <?php endif; ?>
+
+            <?php if ($paginationViewModel && method_exists($paginationViewModel, 'build')): ?>
+                <?php
+                $pagination = $paginationViewModel->build(
+                    $currentPage,
+                    $total,
+                    $perPage,
+                    static fn(int $p) => method_exists($viewModel, 'getPageUrl') ? $viewModel->getPageUrl($p) : '#'
+                );
+                ?>
+                <?= $block->getLayout()
+                    ->createBlock(\Magento\Framework\View\Element\Template::class)
+                    ->setTemplate('Panth_Blog::pagination.phtml')
+                    ->setData('pagination', $pagination)
+                    ->toHtml() ?>
+            <?php endif; ?>
+        </main>
+
+        <?php if ($sidebarViewModel): ?>
+            <aside class="pb-layout__sidebar pb-sidebar">
+                <?= $block->getLayout()
+                    ->createBlock(\Magento\Framework\View\Element\Template::class)
+                    ->setTemplate('Panth_Blog::sidebar/sidebar.phtml')
+                    ->setData('view_model', $sidebarViewModel)
+                    ->toHtml() ?>
+            </aside>
+        <?php endif; ?>
+    </div>
+
+    <?php if ($jsonLd !== ''): ?>
+        <script type="application/ld+json"><?= /** @noEscape */ $jsonLd ?></script>
+    <?php endif; ?>
+</section>

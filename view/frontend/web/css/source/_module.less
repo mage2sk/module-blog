@@ -1,0 +1,78 @@
+// Panth_Blog - minimal CSS fallbacks for component-level needs Tailwind doesn't cover.
+// Hyva uses Tailwind for layout/typography. These rules style elements rendered inside
+// trusted post content (`.pb-prose`) where Tailwind utility classes are not present.
+
+.pb-prose {
+    code {
+        background: #f4f4f5;
+        border-radius: 4px;
+        padding: 0.15em 0.35em;
+        font-size: 0.9em;
+        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    }
+
+    pre {
+        background: #1f2937;
+        color: #f9fafb;
+        border-radius: 8px;
+        padding: 1rem;
+        overflow-x: auto;
+        font-size: 0.9em;
+        line-height: 1.5;
+
+        code {
+            background: transparent;
+            color: inherit;
+            padding: 0;
+            font-size: inherit;
+        }
+    }
+
+    blockquote {
+        border-left: 4px solid #0d9488;
+        padding-left: 1rem;
+        color: #4b5563;
+        font-style: italic;
+        margin: 1em 0;
+    }
+
+    table {
+        border-collapse: collapse;
+        width: 100%;
+        margin: 1em 0;
+
+        th, td {
+            border: 1px solid #e5e7eb;
+            padding: 0.5rem 0.75rem;
+            text-align: left;
+        }
+
+        th {
+            background: #f9fafb;
+            font-weight: 600;
+        }
+    }
+
+    a {
+        color: #0f766e;
+        text-decoration: underline;
+
+        &:hover {
+            color: #134e4a;
+        }
+    }
+
+    img {
+        max-width: 100%;
+        height: auto;
+        border-radius: 6px;
+    }
+}
+
+.pb-tldr[data-aeo="tldr"] {
+    scroll-margin-top: 6rem;
+}
+
+.pb-toc {
+    scroll-margin-top: 6rem;
+}

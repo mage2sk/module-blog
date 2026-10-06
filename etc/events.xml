@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:Event/etc/events.xsd">
+    <event name="panth_blog_post_save_before">
+        <observer name="panth_blog_post_save_before_compute"
+                  instance="Panth\Blog\Observer\PostSaveBefore"/>
+    </event>
+    <event name="panth_blog_post_save_after">
+        <observer name="panth_blog_post_save_after_main"
+                  instance="Panth\Blog\Observer\PostSaveAfter"/>
+    </event>
+    <event name="panth_blog_post_delete_before">
+        <observer name="panth_blog_post_delete_before_stores"
+                  instance="Panth\Blog\Observer\PostDeleteBefore"/>
+    </event>
+    <event name="panth_blog_post_delete_after">
+        <observer name="panth_blog_post_delete_after_indexnow"
+                  instance="Panth\Blog\Observer\PostDeleteAfter"/>
+    </event>
+    <event name="panth_blog_category_save_after">
+        <observer name="panth_blog_category_save_after"
+                  instance="Panth\Blog\Observer\CategorySaveAfter"/>
+    </event>
+    <event name="panth_blog_comment_save_commit_after">
+        <observer name="panth_blog_comment_notify" instance="Panth\Blog\Observer\CommentNotification"/>
+    </event>
+</config>

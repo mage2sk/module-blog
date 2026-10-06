@@ -1,0 +1,25 @@
+<?php
+declare(strict_types=1);
+/** @var \Magento\Framework\View\Element\Template $block */
+/** @var \Magento\Framework\Escaper $escaper */
+/** @var \Magento\Framework\Data\Form\FormKey $formKey */
+$slug = (string)$block->getData('post_slug');
+$action = '/blog/comment/submit';
+?>
+<form class="pb-comment-form" method="post" action="<?= $escaper->escapeUrl($action) ?>">
+    <input type="hidden" name="post_slug" value="<?= $escaper->escapeHtmlAttr($slug) ?>"/>
+    <input type="hidden" name="form_key" value="<?= $escaper->escapeHtmlAttr($block->getFormKey()) ?>"/>
+    <div class="pb-comment-form__row">
+        <label class="pb-comment-form__label" for="pb-c-name"><?= $escaper->escapeHtml(__('Name')) ?></label>
+        <input id="pb-c-name" type="text" name="author_name" required maxlength="120"/>
+    </div>
+    <div class="pb-comment-form__row">
+        <label class="pb-comment-form__label" for="pb-c-email"><?= $escaper->escapeHtml(__('Email')) ?></label>
+        <input id="pb-c-email" type="email" name="author_email" required maxlength="255"/>
+    </div>
+    <div class="pb-comment-form__row">
+        <label class="pb-comment-form__label" for="pb-c-content"><?= $escaper->escapeHtml(__('Comment')) ?></label>
+        <textarea id="pb-c-content" name="content" required rows="5" maxlength="2000"></textarea>
+    </div>
+    <button type="submit" class="pb-btn pb-btn--primary"><?= $escaper->escapeHtml(__('Post comment')) ?></button>
+</form>

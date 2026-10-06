@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<listing xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Ui:etc/ui_configuration.xsd">
+    <argument name="data" xsi:type="array">
+        <item name="js_config" xsi:type="array">
+            <item name="provider" xsi:type="string">panth_blog_category_listing.panth_blog_category_listing_data_source</item>
+        </item>
+    </argument>
+    <settings>
+        <buttons>
+            <button name="add">
+                <url path="*/*/new"/>
+                <class>primary</class>
+                <label translate="true">Add New Category</label>
+            </button>
+        </buttons>
+        <spinner>panth_blog_category_columns</spinner>
+        <deps>
+            <dep>panth_blog_category_listing.panth_blog_category_listing_data_source</dep>
+        </deps>
+    </settings>
+    <dataSource name="panth_blog_category_listing_data_source" component="Magento_Ui/js/grid/provider">
+        <settings>
+            <storageConfig>
+                <param name="indexField" xsi:type="string">category_id</param>
+            </storageConfig>
+            <updateUrl path="mui/index/render"/>
+        </settings>
+        <aclResource>Panth_Blog::category</aclResource>
+        <dataProvider class="Panth\Blog\Ui\CategoryGridDataProvider" name="panth_blog_category_listing_data_source">
+            <settings>
+                <requestFieldName>id</requestFieldName>
+                <primaryFieldName>category_id</primaryFieldName>
+            </settings>
+        </dataProvider>
+    </dataSource>
+    <listingToolbar name="listing_top">
+        <settings>
+            <sticky>true</sticky>
+        </settings>
+        <bookmark name="bookmarks"/>
+        <columnsControls name="columns_controls"/>
+        <filterSearch name="fulltext"/>
+        <filters name="listing_filters"/>
+        <massaction name="listing_massaction">
+            <action name="delete">
+                <settings>
+                    <confirm>
+                        <message translate="true">Are you sure you want to delete selected items?</message>
+                        <title translate="true">Delete items</title>
+                    </confirm>
+                    <url path="*/*/massDelete"/>
+                    <type>delete</type>
+                    <label translate="true">Delete</label>
+                </settings>
+            </action>
+            <action name="enable">
+                <settings>
+                    <url path="*/*/massStatus">
+                        <param name="type">enable</param>
+                    </url>
+                    <type>enable</type>
+                    <label translate="true">Enable</label>
+                </settings>
+            </action>
+            <action name="disable">
+                <settings>
+                    <url path="*/*/massStatus">
+                        <param name="type">disable</param>
+                    </url>
+                    <type>disable</type>
+                    <label translate="true">Disable</label>
+                </settings>
+            </action>
+        </massaction>
+        <paging name="listing_paging"/>
+    </listingToolbar>
+    <columns name="panth_blog_category_columns">
+        <selectionsColumn name="ids" sortOrder="0">
+            <settings>
+                <indexField>category_id</indexField>
+            </settings>
+        </selectionsColumn>
+        <column name="category_id" sortOrder="10">
+            <settings>
+                <filter>textRange</filter>
+                <label translate="true">ID</label>
+                <sorting>asc</sorting>
+            </settings>
+        </column>
+        <column name="name" sortOrder="20">
+            <settings>
+                <filter>text</filter>
+                <label translate="true">Name</label>
+            </settings>
+        </column>
+        <column name="url_key" sortOrder="30">
+            <settings>
+                <filter>text</filter>
+                <label translate="true">URL Key</label>
+            </settings>
+        </column>
+        <column name="level" sortOrder="40">
+            <settings>
+                <filter>textRange</filter>
+                <label translate="true">Level</label>
+            </settings>
+        </column>
+        <column name="post_count" sortOrder="50">
+            <settings>
+                <filter>textRange</filter>
+                <label translate="true">Posts</label>
+            </settings>
+        </column>
+        <column name="is_active" sortOrder="60" component="Magento_Ui/js/grid/columns/select">
+            <settings>
+                <options class="Magento\Config\Model\Config\Source\Yesno"/>
+                <filter>select</filter>
+                <dataType>select</dataType>
+                <label translate="true">Active</label>
+            </settings>
+        </column>
+        <column name="sort_order" sortOrder="70">
+            <settings>
+                <filter>textRange</filter>
+                <label translate="true">Sort Order</label>
+            </settings>
+        </column>
+        <column name="created_at" sortOrder="80" class="Magento\Ui\Component\Listing\Columns\Date" component="Magento_Ui/js/grid/columns/date">
+            <settings>
+                <filter>dateRange</filter>
+                <dataType>date</dataType>
+                <label translate="true">Created</label>
+            </settings>
+        </column>
+        <actionsColumn name="actions" class="Panth\Blog\Ui\Component\Listing\Columns\CategoryActions" sortOrder="1000">
+            <settings>
+                <indexField>category_id</indexField>
+            </settings>
+        </actionsColumn>
+    </columns>
+</listing>

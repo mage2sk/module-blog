@@ -1,0 +1,76 @@
+<?php
+declare(strict_types=1);
+/**
+ * @var \Magento\Framework\View\Element\Template $block
+ * @var \Magento\Framework\Escaper $escaper
+ */
+$posts = (array)$block->getData('posts');
+$viewModel = $block->getData('view_model');
+$showReadingTime = ($viewModel && method_exists($viewModel, 'isShowReadingTime'))
+    ? (bool)$viewModel->isShowReadingTime()
+    : true;
+if (empty($posts)) {
+    return;
+}
+?>
+<ul class="pb-post-list pb-list--grid">
+    <?php foreach ($posts as $post): ?>
+        <?php
+        $title = method_exists($post, 'getTitle') ? (string)$post->getTitle() : '';
+        $postUrl = ($viewModel && method_exists($viewModel, 'getPostUrl')) ? (string)$viewModel->getPostUrl($post) : '#';
+        $img = method_exists($post, 'getFeaturedImage') ? (string)($post->getFeaturedImage() ?? '') : '';
+        $alt = method_exists($post, 'getFeaturedImageAlt') ? (string)($post->getFeaturedImageAlt() ?? '') : '';
+        $shortDesc = method_exists($post, 'getShortDescription') ? (string)($post->getShortDescription() ?? '') : '';
+        $publishedAt = method_exists($post, 'getPublishedAt') ? (string)($post->getPublishedAt() ?? '') : '';
+        $readingTime = method_exists($post, 'getReadingTimeMin') ? (int)($post->getReadingTimeMin() ?? 0) : 0;
+        $media = ($img !== '' && $viewModel && method_exists($viewModel, 'getMediaUrl')) ? (string)$viewModel->getMediaUrl($img) : '';
+        $altText = $alt !== '' ? $alt : $title;
+        ?>
+        <li class="pb-post-card">
+        <?php
+        $badgesVm = $block->getData('badges_view_model');
+        $badges = $badgesVm ? $badgesVm->getBadgesForPost($post) : [];
+        ?>
+        <?php if (!empty($badges)): ?>
+            <span class="kb-badges">
+                <?php foreach ($badges as $badge): ?>
+                    <?php if ($badge['url'] !== ''): ?>
+                        <a class="kb-badge kb-badge--<?= $escaper->escapeHtmlAttr($badge['tone']) ?>"
+                           href="<?= $escaper->escapeUrl($badge['url']) ?>"><?= $escaper->escapeHtml($badge['label']) ?></a>
+                    <?php else: ?>
+                        <span class="kb-badge kb-badge--<?= $escaper->escapeHtmlAttr($badge['tone']) ?>"><?= $escaper->escapeHtml($badge['label']) ?></span>
+                    <?php endif; ?>
+                <?php endforeach; ?>
+            </span>
+        <?php endif; ?>
+            <a class="pb-post-card__media" href="<?= $escaper->escapeUrl($postUrl) ?>">
+                <?php if ($media !== ''): ?>
+                    <img src="<?= $escaper->escapeUrl($media) ?>"
+                         alt="<?= $escaper->escapeHtmlAttr($altText) ?>"
+                         loading="lazy"/>
+                <?php else: ?>
+                    <div class="pb-post-card__media-placeholder" aria-hidden="true"></div>
+                <?php endif; ?>
+            </a>
+            <div class="pb-post-card__body">
+                <h3 class="pb-post-card__title">
+                    <a href="<?= $escaper->escapeUrl($postUrl) ?>"><?= $escaper->escapeHtml($title) ?></a>
+                </h3>
+                <?php if ($shortDesc !== ''): ?>
+                    <p class="pb-post-card__excerpt"><?= $escaper->escapeHtml($shortDesc) ?></p>
+                <?php endif; ?>
+                <div class="pb-post-card__meta">
+                    <?php if ($publishedAt !== ''): ?>
+                        <time datetime="<?= $escaper->escapeHtmlAttr(date('c', strtotime($publishedAt))) ?>">
+                            <?= $escaper->escapeHtml(date('M j, Y', strtotime($publishedAt))) ?>
+                        </time>
+                    <?php endif; ?>
+                    <?php if ($showReadingTime && $readingTime > 0): ?>
+                        <span class="pb-meta__dot" aria-hidden="true"></span>
+                        <span class="pb-post-card__reading-time"><?= (int)$readingTime ?> <?= $escaper->escapeHtml(__('min read')) ?></span>
+                    <?php endif; ?>
+                </div>
+            </div>
+        </li>
+    <?php endforeach; ?>
+</ul>

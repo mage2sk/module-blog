@@ -1,0 +1,94 @@
+<?php
+declare(strict_types=1);
+/**
+ * @var \Magento\Framework\View\Element\Template $block
+ * @var \Magento\Framework\Escaper $escaper
+ * @var \Panth\Blog\ViewModel\TagView $viewModel
+ * @var \Panth\Blog\ViewModel\Sidebar $sidebarViewModel
+ * @var \Panth\Blog\ViewModel\Pagination $paginationViewModel
+ */
+$viewModel = $block->getData('view_model');
+$sidebarViewModel = $block->getData('sidebar_view_model');
+$paginationViewModel = $block->getData('pagination_view_model');
+
+$tag = method_exists($viewModel, 'getTag') ? $viewModel->getTag() : null;
+if (!$tag) {
+    return;
+}
+
+$name = method_exists($tag, 'getName') ? (string)$tag->getName() : '';
+$description = method_exists($tag, 'getDescription') ? (string)($tag->getDescription() ?? '') : '';
+$posts = method_exists($viewModel, 'getPosts') ? ($viewModel->getPosts() ?? []) : [];
+$currentPage = method_exists($viewModel, 'getCurrentPage') ? (int)$viewModel->getCurrentPage() : 1;
+$total = method_exists($viewModel, 'getTotalPosts') ? (int)$viewModel->getTotalPosts() : count($posts);
+$perPage = method_exists($viewModel, 'getPostsPerPage') ? (int)$viewModel->getPostsPerPage() : 10;
+$breadcrumbs = method_exists($viewModel, 'getBreadcrumbs') ? ($viewModel->getBreadcrumbs() ?? []) : [];
+$jsonLd = method_exists($viewModel, 'getJsonLd') ? (string)$viewModel->getJsonLd() : '';
+?>
+<section class="pb-page pb-tag">
+    <?php if (!empty($breadcrumbs)): ?>
+        <?= $block->getLayout()
+            ->createBlock(\Magento\Framework\View\Element\Template::class)
+            ->setTemplate('Panth_Blog::breadcrumbs.phtml')
+            ->setData('items', $breadcrumbs)
+            ->toHtml() ?>
+    <?php endif; ?>
+
+    <section class="pb-banner pb-banner--tag">
+        <span class="pb-banner__label"><?= $escaper->escapeHtml(__('Tag')) ?></span>
+        <h1 class="pb-banner__title">#<?= $escaper->escapeHtml($name) ?></h1>
+        <?php if ($description !== ''): ?>
+            <div class="pb-banner__desc"><?= $escaper->escapeHtml($description, ['p', 'br', 'strong', 'b', 'em', 'i', 'a', 'span', 'ul', 'ol', 'li']) ?></div>
+        <?php endif; ?>
+        <?php if ($total > 0): ?>
+            <span class="pb-banner__count">
+                <?= (int)$total ?> <?= $escaper->escapeHtml($total === 1 ? __('article') : __('articles')) ?>
+            </span>
+        <?php endif; ?>
+    </section>
+
+    <div class="pb-layout">
+        <main class="pb-layout__main">
+            <?php if (empty($posts)): ?>
+                <p class="pb-empty"><?= $escaper->escapeHtml(__('No posts for this tag yet.')) ?></p>
+            <?php else: ?>
+                <?= $block->getLayout()
+                    ->createBlock(\Magento\Framework\View\Element\Template::class)
+                    ->setTemplate('Panth_Blog::list/grid.phtml')
+                    ->setData('badges_view_model', $block->getData('badges_view_model'))
+                    ->setData('posts', $posts)
+                    ->setData('view_model', $viewModel)
+                    ->toHtml() ?>
+
+                <?php if ($paginationViewModel && method_exists($paginationViewModel, 'build') && $total > $perPage): ?>
+                    <?php
+                    $pagination = $paginationViewModel->build(
+                        $currentPage,
+                        $total,
+                        $perPage,
+                        static fn(int $p) => method_exists($viewModel, 'getPageUrl') ? $viewModel->getPageUrl($p) : '#'
+                    );
+                    ?>
+                    <?= $block->getLayout()
+                        ->createBlock(\Magento\Framework\View\Element\Template::class)
+                        ->setTemplate('Panth_Blog::pagination.phtml')
+                        ->setData('pagination', $pagination)
+                        ->toHtml() ?>
+                <?php endif; ?>
+            <?php endif; ?>
+        </main>
+        <?php if ($sidebarViewModel): ?>
+            <aside class="pb-layout__sidebar">
+                <?= $block->getLayout()
+                    ->createBlock(\Magento\Framework\View\Element\Template::class)
+                    ->setTemplate('Panth_Blog::sidebar/sidebar.phtml')
+                    ->setData('view_model', $sidebarViewModel)
+                    ->toHtml() ?>
+            </aside>
+        <?php endif; ?>
+    </div>
+
+    <?php if ($jsonLd !== ''): ?>
+        <script type="application/ld+json"><?= /** @noEscape */ $jsonLd ?></script>
+    <?php endif; ?>
+</section>

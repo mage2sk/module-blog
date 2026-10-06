@@ -1,0 +1,40 @@
+<!--@subject New blog comment on "{{var post_title}}" ({{var status}}) @-->
+{{template config_path="design/email/header_template"}}
+
+<table cellpadding="0" cellspacing="0" border="0" width="100%">
+    <tr>
+        <td>
+            <h2 style="margin:0 0 12px;font-size:20px;">A new comment was posted</h2>
+
+            <p style="margin:0 0 16px;">
+                <strong>Post:</strong> {{var post_title}}
+                {{depend post_url}}<br/><a href="{{var post_url}}">{{var post_url}}</a>{{/depend}}
+            </p>
+
+            <table cellpadding="6" cellspacing="0" border="0" width="100%" style="border-collapse:collapse;">
+                <tr>
+                    <td width="140" style="vertical-align:top;"><strong>Author</strong></td>
+                    <td>{{var author_name}}</td>
+                </tr>
+                <tr>
+                    <td style="vertical-align:top;"><strong>Email</strong></td>
+                    <td>{{var author_email}}</td>
+                </tr>
+                <tr>
+                    <td style="vertical-align:top;"><strong>Status</strong></td>
+                    <td>{{var status}}</td>
+                </tr>
+                <tr>
+                    <td style="vertical-align:top;"><strong>Comment</strong></td>
+                    <td>{{var content}}</td>
+                </tr>
+            </table>
+
+            <p style="margin:20px 0 0;">
+                <a href="{{var moderation_url}}">Review and moderate comments</a>
+            </p>
+        </td>
+    </tr>
+</table>
+
+{{template config_path="design/email/footer_template"}}
