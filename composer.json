@@ -2,8 +2,8 @@
     "name": "mage2kishan/module-blog",
     "description": "Panth_Blog - SEO-grade blog module for Magento 2 with first-class AEO/AIO support: JSON-LD, llms.txt, IndexNow, hreflang, markdown export, RSS/Atom feeds, and Hyva-first templates. Built to plug into the Panth_* ecosystem.",
     "type": "magento2-module",
-    "version": "1.3.13",
-    "license": "proprietary",
+    "version": "1.3.14",
+    "license": "MIT",
     "authors": [
         {
             "name": "Kishan Savaliya",
